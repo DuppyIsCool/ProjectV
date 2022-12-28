@@ -17,6 +17,7 @@ public static class ItemSerializer
         return new InventoryItem
         {
             item = ItemDatabase.GetItem(itemid),
+            
             amount = amount
         };
     }
