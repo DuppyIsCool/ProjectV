@@ -1,27 +1,37 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.SceneManagement;
 using Cinemachine;
 using Mirror;
 public class CameraFollow : NetworkBehaviour
 {
-    // Start is called before the first frame update
-    [SerializeField]
-    private CinemachineVirtualCamera virtualcam;
-    void Start()
-    {
-        if (!isLocalPlayer)
-            return;
+    Camera mainCam;
 
-        virtualcam = GameObject.FindGameObjectWithTag("Camera").GetComponent<CinemachineVirtualCamera>();
-        if (virtualcam == null)
+    void Awake()
+    {
+        mainCam = Camera.main;
+    }
+    public override void OnStartLocalPlayer()
+    {
+        if (mainCam != null)
         {
-            print("Player encountered error when finding Camera");
+            mainCam.GetComponent<CameraTarget>().target = this.transform;
         }
         else 
         {
-            virtualcam.Follow = this.transform;
-            virtualcam.LookAt = this.transform;
+            print("Error setting camera target for player");
+        }
+
+        base.OnStartLocalPlayer();
+    }
+    public override void OnStopLocalPlayer()
+    {
+        if (mainCam != null)
+        {
+            mainCam.GetComponent<CameraTarget>().target = null;
+            SceneManager.MoveGameObjectToScene(mainCam.gameObject, SceneManager.GetActiveScene());
         }
     }
+
 }

@@ -4,43 +4,24 @@ using Mirror;
 using UnityEngine;
 public class ChangePlayerColor : NetworkBehaviour
 { 
-    [SyncVar(hook = "ChangeColor")] Color color;
+    [SyncVar(hook = nameof(SetColor))]public Color32 color = Color.black;
 
-    //This is called when the player object is created
-    public override void OnStartLocalPlayer() 
+    /// Unity clones the material when GetComponent<Renderer>().material is called
+    // Cache it here and destroy it in OnDestroy to prevent a memory lea
+
+    void SetColor(Color32 _, Color32 newColor)
     {
-        //If we are the local player
-        if (isLocalPlayer)
-        {
-            //Calculate a new color value
-            Color newcolor = new Color(Random.value, Random.value, Random.value);
 
-            //Ask our color value to be changed by the server
-            RequestColorChange(newcolor);
-
-            //To prevent delays and a noticable color swap, update the color on the client's side immedietly
-            this.GetComponent<SpriteRenderer>().color = newcolor;
-        }
-        base.OnStartLocalPlayer();
+        this.GetComponent<SpriteRenderer>().color = newColor;
     }
 
-    //This is called on the server by a client
-    [Command]
-    private void RequestColorChange(Color newcolor)
+    public override void OnStartServer()
     {
-        //Set the inputed color value (from client) into the SyncVar (which syncs the value between all clients)
-        color = newcolor;
+        base.OnStartServer();
 
-        //Update the color of the value on the server side
-        this.GetComponent<SpriteRenderer>().color = newcolor;
-    }
-
-    //This is called on clients when the SyncVar 'color' is changed
-    [Client]
-    private void ChangeColor(Color oldcolor, Color newcolor) 
-    {
-
-        //Update the color of this sprite when we receive color updates
-        this.GetComponent<SpriteRenderer>().color = newcolor;
+        // This script is on players that are respawned repeatedly
+        // so once the color has been set, don't change it.
+        if (color == Color.black)
+            color = Random.ColorHSV(0f, 1f, 0.1f, 1f, 0.1f, 1f);
     }
 }

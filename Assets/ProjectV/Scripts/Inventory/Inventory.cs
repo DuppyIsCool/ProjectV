@@ -18,7 +18,14 @@ public class Inventory : NetworkBehaviour
     public override void OnStartClient() 
     {
         inventory.Callback += OnInventoryUpdated;
-    }
+
+        // Process initial SyncList payload
+        for (int index = 0; index < inventory.Count; index++)
+        {
+            OnInventoryUpdated(SyncList<InventoryItem>.Operation.OP_ADD, index, new InventoryItem(), inventory[index]);
+        }
+
+}
 
     void OnInventoryUpdated(SyncList<InventoryItem>.Operation op, int index, InventoryItem oldItem, InventoryItem newItem) 
     {
@@ -28,21 +35,23 @@ public class Inventory : NetworkBehaviour
             switch (op) 
             {
                 case SyncList<InventoryItem>.Operation.OP_ADD:
-                    //print(newItem.amount + " of " + newItem.item.id + " was added to my inventory as a new stack");
+                    print(newItem.amount + " of " + newItem.item.id + " was added to my inventory as a new stack");
                     break;
 
                 case SyncList<InventoryItem>.Operation.OP_INSERT:
-                
+
                     break;
 
                 case SyncList<InventoryItem>.Operation.OP_SET:
-                    //print("My " + oldItem.amount + " of " + oldItem.item.id + " became a " + newItem.amount + " of " + newItem.item.id);
+                    print("My " + oldItem.amount + " of " + oldItem.item.id + " became a " + newItem.amount + " of " + newItem.item.id);
                     break;
 
                 case SyncList<InventoryItem>.Operation.OP_REMOVEAT:
+
                     break;
 
                 case SyncList<InventoryItem>.Operation.OP_CLEAR:
+
                     break;
 
 
@@ -93,13 +102,9 @@ public class Inventory : NetworkBehaviour
 
     public void Awake()
     {
-        if (!isServer)
-            return;
-
-        SetupInventory();
+        if(isServer)
+            SetupInventory();
     }
-
-
 
 }
 

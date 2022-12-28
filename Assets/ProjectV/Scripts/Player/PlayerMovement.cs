@@ -9,6 +9,9 @@ public class PlayerMovement : NetworkBehaviour
 
     private Vector2 movement;
 
+
+    public bool isFrozen = false;
+
     [SerializeField]
     private float speed = 2;
     // Start is called before the first frame update
@@ -23,6 +26,8 @@ public class PlayerMovement : NetworkBehaviour
         if (!isLocalPlayer)
             return;
 
+        if (isFrozen)
+            return;
         movement.x = Input.GetAxisRaw("Horizontal");
         movement.y = Input.GetAxisRaw("Vertical");
     }
@@ -30,6 +35,6 @@ public class PlayerMovement : NetworkBehaviour
     private void FixedUpdate()
     {
         //Calculate velocity
-        rb.velocity = movement.normalized * speed;
+        rb.MovePosition(rb.position + movement.normalized * speed * Time.fixedDeltaTime);
     }
 }
