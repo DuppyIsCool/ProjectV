@@ -6,17 +6,18 @@ using Cinemachine;
 using Mirror;
 public class CameraFollow : NetworkBehaviour
 {
-    Camera mainCam;
+    CinemachineVirtualCamera mainCam;
 
     void Awake()
     {
-        mainCam = Camera.main;
+        mainCam = GameObject.FindGameObjectWithTag("Camera").GetComponent<CinemachineVirtualCamera>();
     }
     public override void OnStartLocalPlayer()
     {
         if (mainCam != null)
         {
-            mainCam.GetComponent<CameraTarget>().target = this.transform;
+            SceneManager.MoveGameObjectToScene(mainCam.gameObject, this.gameObject.scene);
+            mainCam.Follow = this.transform;
         }
         else 
         {
@@ -29,7 +30,7 @@ public class CameraFollow : NetworkBehaviour
     {
         if (mainCam != null)
         {
-            mainCam.GetComponent<CameraTarget>().target = null;
+            mainCam.Follow = null;
             SceneManager.MoveGameObjectToScene(mainCam.gameObject, SceneManager.GetActiveScene());
         }
     }
