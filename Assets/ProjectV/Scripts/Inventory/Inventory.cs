@@ -2,12 +2,17 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using Mirror;
+using TMPro;
+using UnityEngine.UI;
+using System;
 public class Inventory : NetworkBehaviour
 {
     public readonly SyncList<InventoryItem> inventory = new SyncList<InventoryItem>();
-    [SerializeField] [SyncVar]
-    private int size;
 
+    [SerializeField] [SyncVar] private int size;
+    [SerializeField] [SyncVar] private InventoryItem equippedItem = new InventoryItem().GetEmptyItem();
+    [SerializeField] private GameObject itemButtonPrefab;
+    private GameObject inventoryUI,g;
     [Server]
     private void SetupInventory() 
     {
@@ -17,17 +22,36 @@ public class Inventory : NetworkBehaviour
 
     public override void OnStartClient() 
     {
-        inventory.Callback += OnInventoryUpdated;
-
+        inventory.Callback += InventoryUIUpdates;
+        inventoryUI = GameObject.Find("InventoryUI");
         // Process initial SyncList payload
         for (int index = 0; index < inventory.Count; index++)
         {
-            OnInventoryUpdated(SyncList<InventoryItem>.Operation.OP_ADD, index, new InventoryItem(), inventory[index]);
+            InventoryUIUpdates(SyncList<InventoryItem>.Operation.OP_ADD, index, new InventoryItem(), inventory[index]);
         }
 
-}
+    }
 
-    void OnInventoryUpdated(SyncList<InventoryItem>.Operation op, int index, InventoryItem oldItem, InventoryItem newItem) 
+    public override void OnStopClient()
+    {
+        for (int i = 0; i < inventoryUI.transform.childCount; i++)
+        {
+            Destroy(inventoryUI.transform.GetChild(i).gameObject);
+        }
+
+        inventory.Callback -= InventoryUIUpdates;
+        base.OnStopClient();
+    }
+
+    private void Start()
+    {
+        if (isServer) 
+        {
+            SetupInventory();
+        }
+    }
+
+    void InventoryUIUpdates(SyncList<InventoryItem>.Operation op, int index, InventoryItem oldItem, InventoryItem newItem) 
     {
         //Test code printing for inventory status
         if(isLocalPlayer)
@@ -35,7 +59,11 @@ public class Inventory : NetworkBehaviour
             switch (op) 
             {
                 case SyncList<InventoryItem>.Operation.OP_ADD:
-                    print(newItem.amount + " of " + newItem.item.id + " was added to my inventory as a new stack");
+                    g = Instantiate(itemButtonPrefab,inventoryUI.transform);
+                    g.transform.GetChild(0).GetComponent<TMP_Text>().text = newItem.item.id;
+                    g.transform.GetChild(1).GetComponent<TMP_Text>().text = (newItem.item.value * newItem.amount).ToString();
+                    g.transform.GetChild(2).GetComponent<Image>().sprite = newItem.item.sprite;
+                    g.GetComponent<Button>().AddEventListener(index, EquipItemCmd);
                     break;
 
                 case SyncList<InventoryItem>.Operation.OP_INSERT:
@@ -43,19 +71,35 @@ public class Inventory : NetworkBehaviour
                     break;
 
                 case SyncList<InventoryItem>.Operation.OP_SET:
-                    print("My " + oldItem.amount + " of " + oldItem.item.id + " became a " + newItem.amount + " of " + newItem.item.id);
+                    g = inventoryUI.transform.GetChild(index).gameObject;
+                    g.transform.GetChild(0).GetComponent<TMP_Text>().text = newItem.item.id;
+                    g.transform.GetChild(1).GetComponent<TMP_Text>().text = (newItem.item.value * newItem.amount).ToString();
+                    g.transform.GetChild(2).GetComponent<Image>().sprite = newItem.item.sprite;
                     break;
 
                 case SyncList<InventoryItem>.Operation.OP_REMOVEAT:
-
+                    Destroy(inventoryUI.transform.GetChild(index).gameObject);
                     break;
 
                 case SyncList<InventoryItem>.Operation.OP_CLEAR:
-
+                    for (int i = 0; i < inventoryUI.transform.childCount; i++) 
+                    {
+                        Destroy(inventoryUI.transform.GetChild(i).gameObject);
+                    }
                     break;
 
 
             }
+    }
+
+    [Command]
+    public void EquipItemCmd(int index) 
+    {
+        if (index <= size && index >= 0)
+        {
+            equippedItem = inventory[index];
+            print("Player has equipped item: " + equippedItem.item.id);           
+        }
     }
 
     [Server]
@@ -128,4 +172,14 @@ public struct InventoryItem
             item = null,
             amount = 0
         };
+}
+
+public static class ButtonExtension
+{
+    public static void AddEventListener<T>(this Button button, T param, Action<T> OnClick)
+    {
+        button.onClick.AddListener(delegate () {
+            OnClick(param);
+        });
+    }
 }
