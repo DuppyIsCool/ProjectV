@@ -247,6 +247,7 @@ MonoBehaviour:
   syncMode: 1
   syncInterval: 0.1
   size: 2
+  itemButtonPrefab: {fileID: 7646143058020868428, guid: a4c0723aab27e394bb9b57c703d5b369, type: 3}
 --- !u!114 &-2444637901970856388
 MonoBehaviour:
   m_ObjectHideFlags: 0

@@ -2,12 +2,15 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using Mirror;
+using TMPro;
+using UnityEngine.UI;
 public class Inventory : NetworkBehaviour
 {
     public readonly SyncList<InventoryItem> inventory = new SyncList<InventoryItem>();
-    [SerializeField] [SyncVar]
-    private int size;
 
+    [SerializeField] [SyncVar] private int size;
+    [SerializeField] private GameObject itemButtonPrefab;
+    private GameObject inventoryUI,g;
     [Server]
     private void SetupInventory() 
     {
@@ -18,14 +21,33 @@ public class Inventory : NetworkBehaviour
     public override void OnStartClient() 
     {
         inventory.Callback += OnInventoryUpdated;
-
+        inventoryUI = GameObject.Find("InventoryUI");
         // Process initial SyncList payload
         for (int index = 0; index < inventory.Count; index++)
         {
             OnInventoryUpdated(SyncList<InventoryItem>.Operation.OP_ADD, index, new InventoryItem(), inventory[index]);
         }
 
-}
+    }
+
+    public override void OnStopClient()
+    {
+        for (int i = 0; i < inventoryUI.transform.childCount; i++)
+        {
+            Destroy(inventoryUI.transform.GetChild(i).gameObject);
+        }
+
+        inventory.Callback -= OnInventoryUpdated;
+        base.OnStopClient();
+    }
+
+    private void Start()
+    {
+        if (isServer) 
+        {
+            SetupInventory();
+        }
+    }
 
     void OnInventoryUpdated(SyncList<InventoryItem>.Operation op, int index, InventoryItem oldItem, InventoryItem newItem) 
     {
@@ -35,7 +57,10 @@ public class Inventory : NetworkBehaviour
             switch (op) 
             {
                 case SyncList<InventoryItem>.Operation.OP_ADD:
-                    print(newItem.amount + " of " + newItem.item.id + " was added to my inventory as a new stack");
+                    g = Instantiate(itemButtonPrefab,inventoryUI.transform);
+                    g.transform.GetChild(0).GetComponent<TMP_Text>().text = newItem.item.id;
+                    g.transform.GetChild(1).GetComponent<TMP_Text>().text = (newItem.item.value * newItem.amount).ToString();
+                    g.transform.GetChild(2).GetComponent<Image>().sprite = newItem.item.sprite;
                     break;
 
                 case SyncList<InventoryItem>.Operation.OP_INSERT:
@@ -43,15 +68,21 @@ public class Inventory : NetworkBehaviour
                     break;
 
                 case SyncList<InventoryItem>.Operation.OP_SET:
-                    print("My " + oldItem.amount + " of " + oldItem.item.id + " became a " + newItem.amount + " of " + newItem.item.id);
+                    g = inventoryUI.transform.GetChild(index).gameObject;
+                    g.transform.GetChild(0).GetComponent<TMP_Text>().text = newItem.item.id;
+                    g.transform.GetChild(1).GetComponent<TMP_Text>().text = (newItem.item.value * newItem.amount).ToString();
+                    g.transform.GetChild(2).GetComponent<Image>().sprite = newItem.item.sprite;
                     break;
 
                 case SyncList<InventoryItem>.Operation.OP_REMOVEAT:
-
+                    Destroy(inventoryUI.transform.GetChild(index).gameObject);
                     break;
 
                 case SyncList<InventoryItem>.Operation.OP_CLEAR:
-
+                    for (int i = 0; i < inventoryUI.transform.childCount; i++) 
+                    {
+                        Destroy(inventoryUI.transform.GetChild(i).gameObject);
+                    }
                     break;
 
 
