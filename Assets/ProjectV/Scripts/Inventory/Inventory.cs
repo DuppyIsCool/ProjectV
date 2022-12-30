@@ -4,11 +4,13 @@ using UnityEngine;
 using Mirror;
 using TMPro;
 using UnityEngine.UI;
+using System;
 public class Inventory : NetworkBehaviour
 {
     public readonly SyncList<InventoryItem> inventory = new SyncList<InventoryItem>();
 
     [SerializeField] [SyncVar] private int size;
+    [SerializeField] [SyncVar] private InventoryItem equippedItem = new InventoryItem().GetEmptyItem();
     [SerializeField] private GameObject itemButtonPrefab;
     private GameObject inventoryUI,g;
     [Server]
@@ -20,12 +22,12 @@ public class Inventory : NetworkBehaviour
 
     public override void OnStartClient() 
     {
-        inventory.Callback += OnInventoryUpdated;
+        inventory.Callback += InventoryUIUpdates;
         inventoryUI = GameObject.Find("InventoryUI");
         // Process initial SyncList payload
         for (int index = 0; index < inventory.Count; index++)
         {
-            OnInventoryUpdated(SyncList<InventoryItem>.Operation.OP_ADD, index, new InventoryItem(), inventory[index]);
+            InventoryUIUpdates(SyncList<InventoryItem>.Operation.OP_ADD, index, new InventoryItem(), inventory[index]);
         }
 
     }
@@ -37,7 +39,7 @@ public class Inventory : NetworkBehaviour
             Destroy(inventoryUI.transform.GetChild(i).gameObject);
         }
 
-        inventory.Callback -= OnInventoryUpdated;
+        inventory.Callback -= InventoryUIUpdates;
         base.OnStopClient();
     }
 
@@ -49,7 +51,7 @@ public class Inventory : NetworkBehaviour
         }
     }
 
-    void OnInventoryUpdated(SyncList<InventoryItem>.Operation op, int index, InventoryItem oldItem, InventoryItem newItem) 
+    void InventoryUIUpdates(SyncList<InventoryItem>.Operation op, int index, InventoryItem oldItem, InventoryItem newItem) 
     {
         //Test code printing for inventory status
         if(isLocalPlayer)
@@ -61,6 +63,7 @@ public class Inventory : NetworkBehaviour
                     g.transform.GetChild(0).GetComponent<TMP_Text>().text = newItem.item.id;
                     g.transform.GetChild(1).GetComponent<TMP_Text>().text = (newItem.item.value * newItem.amount).ToString();
                     g.transform.GetChild(2).GetComponent<Image>().sprite = newItem.item.sprite;
+                    g.GetComponent<Button>().AddEventListener(index, EquipItemCmd);
                     break;
 
                 case SyncList<InventoryItem>.Operation.OP_INSERT:
@@ -87,6 +90,16 @@ public class Inventory : NetworkBehaviour
 
 
             }
+    }
+
+    [Command]
+    public void EquipItemCmd(int index) 
+    {
+        if (index <= size && index >= 0)
+        {
+            equippedItem = inventory[index];
+            print("Player has equipped item: " + equippedItem.item.id);           
+        }
     }
 
     [Server]
@@ -159,4 +172,14 @@ public struct InventoryItem
             item = null,
             amount = 0
         };
+}
+
+public static class ButtonExtension
+{
+    public static void AddEventListener<T>(this Button button, T param, Action<T> OnClick)
+    {
+        button.onClick.AddListener(delegate () {
+            OnClick(param);
+        });
+    }
 }
