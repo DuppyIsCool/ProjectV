@@ -1,5 +1,3 @@
-using System.Collections;
-using System.Collections.Generic;
 using UnityEngine;
 using Mirror;
 using TMPro;
@@ -8,10 +6,10 @@ using System;
 public class Inventory : NetworkBehaviour
 {
     public readonly SyncList<InventoryItem> inventory = new SyncList<InventoryItem>();
-
     [SerializeField] [SyncVar] private int size;
     [SerializeField] [SyncVar] private InventoryItem equippedItem = new InventoryItem().GetEmptyItem();
     [SerializeField] private GameObject itemButtonPrefab;
+
     private GameObject inventoryUI,g;
     [Server]
     private void SetupInventory() 
@@ -23,7 +21,9 @@ public class Inventory : NetworkBehaviour
     public override void OnStartClient() 
     {
         inventory.Callback += InventoryUIUpdates;
+        //Get the UI gameobject
         inventoryUI = GameObject.Find("InventoryUI");
+
         // Process initial SyncList payload
         for (int index = 0; index < inventory.Count; index++)
         {
@@ -34,11 +34,14 @@ public class Inventory : NetworkBehaviour
 
     public override void OnStopClient()
     {
+        //Test code: may need to be changed if fix is found for synclist clearing on scene transfer
+        //When stopping the client, clear the UI as the inventory is cleared
         for (int i = 0; i < inventoryUI.transform.childCount; i++)
         {
             Destroy(inventoryUI.transform.GetChild(i).gameObject);
         }
 
+        //Unsubscribe from callback
         inventory.Callback -= InventoryUIUpdates;
         base.OnStopClient();
     }
@@ -59,6 +62,7 @@ public class Inventory : NetworkBehaviour
             switch (op) 
             {
                 case SyncList<InventoryItem>.Operation.OP_ADD:
+                    //Create the Item UI in the Inventory
                     g = Instantiate(itemButtonPrefab,inventoryUI.transform);
                     g.transform.GetChild(0).GetComponent<TMP_Text>().text = newItem.item.id;
                     g.transform.GetChild(1).GetComponent<TMP_Text>().text = (newItem.item.value * newItem.amount).ToString();
@@ -71,6 +75,7 @@ public class Inventory : NetworkBehaviour
                     break;
 
                 case SyncList<InventoryItem>.Operation.OP_SET:
+                    //Edit the Item UI in the Inventory
                     g = inventoryUI.transform.GetChild(index).gameObject;
                     g.transform.GetChild(0).GetComponent<TMP_Text>().text = newItem.item.id;
                     g.transform.GetChild(1).GetComponent<TMP_Text>().text = (newItem.item.value * newItem.amount).ToString();
@@ -78,10 +83,12 @@ public class Inventory : NetworkBehaviour
                     break;
 
                 case SyncList<InventoryItem>.Operation.OP_REMOVEAT:
+                    //Index in the inventory syncs with the UI index, so delete the UI index
                     Destroy(inventoryUI.transform.GetChild(index).gameObject);
                     break;
 
                 case SyncList<InventoryItem>.Operation.OP_CLEAR:
+                    //Clear all ItemUI elements
                     for (int i = 0; i < inventoryUI.transform.childCount; i++) 
                     {
                         Destroy(inventoryUI.transform.GetChild(i).gameObject);
@@ -105,6 +112,7 @@ public class Inventory : NetworkBehaviour
     [Server]
     public bool AddItem(Item item, int amount) 
     {
+
         //Loop to see if we can fit the item into a current stack
         for(int i = 0; i < inventory.Count; i++)
         {
