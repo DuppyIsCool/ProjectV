@@ -191,7 +191,7 @@ namespace Mirror
             // Don't allow collision-destroyed second instance to continue.
             if (!InitializeSingleton()) return;
 
-            Debug.Log("Mirror | mirror-networking.com | discord.gg/N9QVxbM");
+            //Debug.Log("Mirror | mirror-networking.com | discord.gg/N9QVxbM");
 
             // Apply configuration in Awake once already
             ApplyConfiguration();

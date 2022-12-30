@@ -23,7 +23,6 @@ public class ItemDatabase : MonoBehaviour
 
         foreach (Item item in tempItems)
         {
-            Debug.Log("Loading item with id:" + item.id);
             ItemList.Add(item.id, item);
         }
     }
@@ -34,7 +33,7 @@ public class ItemDatabase : MonoBehaviour
             return ItemList[itemID];
         else
         {
-            Debug.Log("Could not find item by the ID of: " + itemID);
+            Debug.Log("Error: Could not find item by the ID of '" + itemID+"'");
             return null;
         }
     }
