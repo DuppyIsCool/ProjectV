@@ -7,10 +7,7 @@ public class PlayerMovement : NetworkBehaviour
     [SerializeField]
     private Rigidbody2D rb;
 
-    private Vector2 movement;
-
-
-    public bool isFrozen = false;
+    private Vector2 movement; 
 
     [SerializeField]
     private float speed = 2;
@@ -26,8 +23,6 @@ public class PlayerMovement : NetworkBehaviour
         if (!isLocalPlayer)
             return;
 
-        if (isFrozen)
-            return;
         movement.x = Input.GetAxisRaw("Horizontal");
         movement.y = Input.GetAxisRaw("Vertical");
     }

@@ -7,7 +7,7 @@ public class Inventory : NetworkBehaviour
 {
     public readonly SyncList<InventoryItem> inventory = new SyncList<InventoryItem>();
     [SerializeField] [SyncVar] private int size;
-    [SerializeField] [SyncVar] private InventoryItem equippedItem = new InventoryItem().GetEmptyItem();
+    [SerializeField] [SyncVar] public InventoryItem equippedItem = new InventoryItem().GetEmptyItem();
     [SerializeField] private GameObject itemButtonPrefab;
 
     private GameObject inventoryUI,g;
@@ -20,10 +20,10 @@ public class Inventory : NetworkBehaviour
 
     public override void OnStartClient() 
     {
-        inventory.Callback += InventoryUIUpdates;
         //Get the UI gameobject
         inventoryUI = GameObject.Find("InventoryUI");
-
+        inventory.Callback += InventoryUIUpdates;    
+        
         // Process initial SyncList payload
         for (int index = 0; index < inventory.Count; index++)
         {
@@ -64,8 +64,8 @@ public class Inventory : NetworkBehaviour
                 case SyncList<InventoryItem>.Operation.OP_ADD:
                     //Create the Item UI in the Inventory
                     g = Instantiate(itemButtonPrefab,inventoryUI.transform);
-                    g.transform.GetChild(0).GetComponent<TMP_Text>().text = newItem.item.id;
-                    g.transform.GetChild(1).GetComponent<TMP_Text>().text = (newItem.item.value * newItem.amount).ToString();
+                    g.transform.GetChild(0).GetComponent<TMP_Text>().text = newItem.item.displayName;
+                    g.transform.GetChild(1).GetComponent<TMP_Text>().text = newItem.item.description;
                     g.transform.GetChild(2).GetComponent<Image>().sprite = newItem.item.sprite;
                     g.GetComponent<Button>().AddEventListener(index, EquipItemCmd);
                     break;
@@ -77,8 +77,8 @@ public class Inventory : NetworkBehaviour
                 case SyncList<InventoryItem>.Operation.OP_SET:
                     //Edit the Item UI in the Inventory
                     g = inventoryUI.transform.GetChild(index).gameObject;
-                    g.transform.GetChild(0).GetComponent<TMP_Text>().text = newItem.item.id;
-                    g.transform.GetChild(1).GetComponent<TMP_Text>().text = (newItem.item.value * newItem.amount).ToString();
+                    g.transform.GetChild(0).GetComponent<TMP_Text>().text = newItem.item.displayName;
+                    g.transform.GetChild(1).GetComponent<TMP_Text>().text = newItem.item.description;
                     g.transform.GetChild(2).GetComponent<Image>().sprite = newItem.item.sprite;
                     break;
 
