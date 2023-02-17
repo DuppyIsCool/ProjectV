@@ -5,7 +5,8 @@ using UnityEngine;
 [CreateAssetMenu(fileName = "BowItem", menuName = "Items/Weapon")]
 public class BowItem : Item
 {
-    public GameObject spawnedPrefab;
+    public GameObject clientPrefab;
+    public GameObject serverPrefab;
     public float speed;
     public float cooldown;
     public int damage;

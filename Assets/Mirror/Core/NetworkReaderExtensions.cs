@@ -239,6 +239,7 @@ namespace Mirror
         // while SyncList<T> is recommended for NetworkBehaviours,
         // structs may have .List<T> members which weaver needs to be able to
         // fully serialize for NetworkMessages etc.
+        // note that Weaver/Readers/GenerateReader() handles this manually.
         public static List<T> ReadList<T>(this NetworkReader reader)
         {
             int length = reader.ReadInt();
@@ -255,6 +256,9 @@ namespace Mirror
         // while SyncSet<T> is recommended for NetworkBehaviours,
         // structs may have .Set<T> members which weaver needs to be able to
         // fully serialize for NetworkMessages etc.
+        // note that Weaver/Readers/GenerateReader() handles this manually.
+        // TODO writer not found. need to adjust weaver first. see tests.
+        /*
         public static HashSet<T> ReadHashSet<T>(this NetworkReader reader)
         {
             int length = reader.ReadInt();
@@ -267,6 +271,7 @@ namespace Mirror
             }
             return result;
         }
+        */
 
         public static T[] ReadArray<T>(this NetworkReader reader)
         {

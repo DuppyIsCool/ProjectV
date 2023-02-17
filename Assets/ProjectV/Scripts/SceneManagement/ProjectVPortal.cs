@@ -42,10 +42,6 @@ public class ProjectVPortal : NetworkBehaviour
             NetworkConnectionToClient conn = identity.connectionToClient;
             if (conn == null) yield break;
 
-            //Store the player's inventory temporarily
-            List<InventoryItem> tempInv = new List<InventoryItem>();
-            player.GetComponent<Inventory>().inventory.CopyTo(tempInv);
-
             // Tell client to unload previous subscene. No custom handling for this.
             conn.Send(new SceneMessage { sceneName = gameObject.scene.path, sceneOperation = SceneOperation.UnloadAdditive, customHandling = true });
 
@@ -65,11 +61,6 @@ public class ProjectVPortal : NetworkBehaviour
 
             //Debug.Log($"SendPlayerToNewScene AddPlayerForConnection {conn} netId:{conn.identity.netId}");
             NetworkServer.AddPlayerForConnection(conn, player);
-
-            //Add the player's inventory back
-            Inventory playerInventory = player.gameObject.GetComponent<Inventory>();
-            foreach (InventoryItem i in tempInv)
-                playerInventory.inventory.Add(i);
 
             // host client would have been disabled by OnTriggerEnter above
             if (NetworkClient.localPlayer != null && NetworkClient.localPlayer.TryGetComponent<PlayerMovement>(out PlayerMovement playerController))
