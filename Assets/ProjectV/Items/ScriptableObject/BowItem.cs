@@ -8,6 +8,5 @@ public class BowItem : Item
     public GameObject clientPrefab;
     public GameObject serverPrefab;
     public float speed;
-    public float cooldown;
     public int damage;
 }

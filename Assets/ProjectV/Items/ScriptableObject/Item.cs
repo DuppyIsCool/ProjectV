@@ -9,7 +9,7 @@ public class Item : ScriptableObject
     public int value;
     public bool isConsumable;
     public bool isUsable;
-    public int useCooldownTime;
+    public float useCooldownTime;
     public int stacklimit;
     public string displayName;
     public string description;

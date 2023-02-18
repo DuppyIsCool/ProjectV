@@ -16,13 +16,12 @@ MonoBehaviour:
   value: 15
   isConsumable: 0
   isUsable: 1
-  useCooldownTime: 1
+  useCooldownTime: 0.1
   stacklimit: 1
   displayName: Bow
-  description: A sturdy bow
+  description: Machine Gun Bow
   sprite: {fileID: 21300000, guid: 9c31dac8174e45844b4ae718c82be1d0, type: 3}
   clientPrefab: {fileID: 4352457437320111246, guid: 6bda857daa340d446b3e53ddd2e1a851, type: 3}
   serverPrefab: {fileID: 4352457437320111246, guid: 7b6d4a89d49df2d488c9079873c81ab3, type: 3}
-  speed: 2
-  cooldown: 15
+  speed: 10
   damage: 5
