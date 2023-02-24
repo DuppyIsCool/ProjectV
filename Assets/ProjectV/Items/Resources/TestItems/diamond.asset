@@ -15,6 +15,8 @@ MonoBehaviour:
   id: diamond
   value: 10
   isConsumable: 0
+  isUsable: 0
+  useCooldownTime: 0
   stacklimit: 1
   displayName: Big Diamond
   description: A rare large diamond!

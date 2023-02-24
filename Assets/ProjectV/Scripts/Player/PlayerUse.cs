@@ -87,7 +87,8 @@ public class PlayerUse : NetworkBehaviour
     [ClientRpc(includeOwner = false)]
     void RpcUse(Vector2 direction,InventoryItem item) 
     {
-        DoUse(direction,item);
+        if(isClientOnly)
+            DoUse(direction,item);
     }
 
     //This is called by both server and clients to process the Use
