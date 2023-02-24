@@ -24,10 +24,18 @@ public class ProjectVPortal : NetworkBehaviour
         //Debug.Log($"{System.DateTime.Now:HH:mm:ss:fff} Portal::OnTriggerEnter {gameObject.name} in {gameObject.scene.name}");
 
         // applies to host client on server and remote clients
+
+        //Stops the players movement script and resets velocity
         if (other.TryGetComponent<PlayerMovement>(out PlayerMovement playerController))
         {
             other.GetComponent<Rigidbody2D>().velocity = Vector2.zero;
             playerController.enabled = false;
+        }
+
+        //Stops the player from using items while loading new scene
+        if (other.TryGetComponent<PlayerUse>(out PlayerUse playerUse))
+        {
+            playerUse.enabled = false;
         }
 
         if (isServer)
@@ -41,10 +49,6 @@ public class ProjectVPortal : NetworkBehaviour
         {
             NetworkConnectionToClient conn = identity.connectionToClient;
             if (conn == null) yield break;
-
-            //Store the player's inventory temporarily
-            List<InventoryItem> tempInv = new List<InventoryItem>();
-            player.GetComponent<Inventory>().inventory.CopyTo(tempInv);
 
             // Tell client to unload previous subscene. No custom handling for this.
             conn.Send(new SceneMessage { sceneName = gameObject.scene.path, sceneOperation = SceneOperation.UnloadAdditive, customHandling = true });
@@ -66,14 +70,13 @@ public class ProjectVPortal : NetworkBehaviour
             //Debug.Log($"SendPlayerToNewScene AddPlayerForConnection {conn} netId:{conn.identity.netId}");
             NetworkServer.AddPlayerForConnection(conn, player);
 
-            //Add the player's inventory back
-            Inventory playerInventory = player.gameObject.GetComponent<Inventory>();
-            foreach (InventoryItem i in tempInv)
-                playerInventory.inventory.Add(i);
-
             // host client would have been disabled by OnTriggerEnter above
             if (NetworkClient.localPlayer != null && NetworkClient.localPlayer.TryGetComponent<PlayerMovement>(out PlayerMovement playerController))
+            {
+                NetworkClient.localPlayer.TryGetComponent<PlayerUse>(out PlayerUse playerUse);
+                playerUse.enabled = true;
                 playerController.enabled = true;
+            }
         }
     }
 }

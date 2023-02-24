@@ -2,12 +2,16 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
-
-[CreateAssetMenu(fileName = "Data", menuName = "Items/TestItems", order = 1)]
+[CreateAssetMenu(fileName = "New Item", menuName = "Items")]
 public class Item : ScriptableObject
 {
     public string id;
     public int value;
+    public bool isConsumable;
+    public bool isUsable;
+    public float useCooldownTime;
     public int stacklimit;
+    public string displayName;
+    public string description;
     public Sprite sprite;
 }

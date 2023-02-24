@@ -1,0 +1,27 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 71e2544c712fbee48951707c609b1902, type: 3}
+  m_Name: GenericBow
+  m_EditorClassIdentifier: 
+  id: generic_bow
+  value: 15
+  isConsumable: 0
+  isUsable: 1
+  useCooldownTime: 0.1
+  stacklimit: 1
+  displayName: Bow
+  description: Machine Gun Bow
+  sprite: {fileID: 21300000, guid: 9c31dac8174e45844b4ae718c82be1d0, type: 3}
+  clientPrefab: {fileID: 4352457437320111246, guid: 6bda857daa340d446b3e53ddd2e1a851, type: 3}
+  serverPrefab: {fileID: 4352457437320111246, guid: 7b6d4a89d49df2d488c9079873c81ab3, type: 3}
+  speed: 10
+  damage: 5

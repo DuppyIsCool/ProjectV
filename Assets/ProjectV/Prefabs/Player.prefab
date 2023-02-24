@@ -19,6 +19,8 @@ GameObject:
   - component: {fileID: 8764052847087020056}
   - component: {fileID: -8757130696875760200}
   - component: {fileID: -2444637901970856388}
+  - component: {fileID: 7034395845003927227}
+  - component: {fileID: -6634465397412629814}
   m_Layer: 6
   m_Name: Player
   m_TagString: Player
@@ -81,7 +83,7 @@ SpriteRenderer:
   m_LightmapParameters: {fileID: 0}
   m_SortingLayerID: 0
   m_SortingLayer: 0
-  m_SortingOrder: 0
+  m_SortingOrder: 1
   m_Sprite: {fileID: 7482667652216324306, guid: 311925a002f4447b3a28927169b83ea6, type: 3}
   m_Color: {r: 0, g: 0, b: 0, a: 1}
   m_FlipX: 0
@@ -188,7 +190,6 @@ MonoBehaviour:
   syncMode: 0
   syncInterval: 0.1
   rb: {fileID: 8245680476788521692}
-  isFrozen: 0
   speed: 4
 --- !u!61 &4849480261143776550
 BoxCollider2D:
@@ -246,7 +247,7 @@ MonoBehaviour:
   syncDirection: 0
   syncMode: 1
   syncInterval: 0.1
-  size: 2
+  size: 5
   itemButtonPrefab: {fileID: 7646143058020868428, guid: a4c0723aab27e394bb9b57c703d5b369, type: 3}
 --- !u!114 &-2444637901970856388
 MonoBehaviour:
@@ -264,15 +265,50 @@ MonoBehaviour:
   syncMode: 0
   syncInterval: 0
   target: {fileID: 3666742376118067627}
-  onlySyncOnChange: 1
-  onlySyncOnChangeCorrectionMultiplier: 2
-  rotationSensitivity: 0.01
-  compressRotation: 0
-  positionPrecision: 0.01
-  scalePrecision: 0.01
+  clientAuthority: 0
   syncPosition: 1
   syncRotation: 0
   syncScale: 0
   showGizmos: 0
   showOverlay: 0
   overlayColor: {r: 0, g: 0, b: 0, a: 0.5}
+  onlySyncOnChange: 1
+  onlySyncOnChangeCorrectionMultiplier: 2
+  rotationSensitivity: 0.01
+  compressRotation: 0
+  positionPrecision: 0.01
+  scalePrecision: 0.01
+--- !u!114 &7034395845003927227
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 3244946866032201212}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 85d0739ac58f303479ce8485c382c8fa, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  syncDirection: 0
+  syncMode: 0
+  syncInterval: 0.1
+  health: 100
+  maxHealth: 100
+--- !u!114 &-6634465397412629814
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 3244946866032201212}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: a4ce8507614a3ae45b7c2a490d7c1274, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  syncDirection: 0
+  syncMode: 0
+  syncInterval: 0.1
+  cooldownTime: 1.5
+  rb: {fileID: 8245680476788521692}
