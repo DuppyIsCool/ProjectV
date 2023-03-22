@@ -2,7 +2,7 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
-[CreateAssetMenu(fileName = "BowItem", menuName = "Items/Weapon")]
+[CreateAssetMenu(fileName = "BowItem", menuName = "Items/Weapon/Bow")]
 public class BowItem : Item
 {
     public GameObject clientPrefab;
