@@ -8,7 +8,7 @@ GameObject:
   m_PrefabAsset: {fileID: 0}
   serializedVersion: 6
   m_Component:
-  - component: {fileID: 3666742376118067627}
+  - component: {fileID: 2547171782106218737}
   - component: {fileID: 8245680476788521691}
   - component: {fileID: 8245680476788521690}
   - component: {fileID: 8245680476788521693}
@@ -28,8 +28,8 @@ GameObject:
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
   m_IsActive: 1
---- !u!4 &3666742376118067627
-Transform:
+--- !u!224 &2547171782106218737
+RectTransform:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
@@ -43,6 +43,11 @@ Transform:
   m_Father: {fileID: 0}
   m_RootOrder: 0
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+  m_AnchorMin: {x: 0.5, y: 0.5}
+  m_AnchorMax: {x: 0.5, y: 0.5}
+  m_AnchoredPosition: {x: 0, y: 0}
+  m_SizeDelta: {x: 1, y: 1}
+  m_Pivot: {x: 0.5, y: 0.5}
 --- !u!212 &8245680476788521691
 SpriteRenderer:
   m_ObjectHideFlags: 0
@@ -264,7 +269,7 @@ MonoBehaviour:
   syncDirection: 1
   syncMode: 0
   syncInterval: 0
-  target: {fileID: 3666742376118067627}
+  target: {fileID: 2547171782106218737}
   clientAuthority: 0
   syncPosition: 1
   syncRotation: 0
@@ -313,3 +318,4 @@ MonoBehaviour:
   health: 100
   maxHealth: 100
   healthBar: {fileID: 5840835168660460350, guid: c7a4a89fcd8877b4b88ac3a5c5dbbcf3, type: 3}
+  headHealthBar: {fileID: 5840835168660460350, guid: c7a4a89fcd8877b4b88ac3a5c5dbbcf3, type: 3}

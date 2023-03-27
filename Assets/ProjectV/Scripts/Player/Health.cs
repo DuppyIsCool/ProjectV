@@ -11,16 +11,20 @@ public class Health : NetworkBehaviour
     public int maxHealth;
 
     public GameObject healthBar;
-
+    public GameObject headHealthBar;
+    
     void Start()
     {
         if (isServer) 
         {
             health = maxHealth;
         }
-        GameObject hBar = Instantiate(healthBar, gameObject.transform.position, Quaternion.identity);
-        hBar.transform.SetParent(gameObject.transform);
-        hBar.GetComponent<HealthBar>().SetMaxHealth(maxHealth);
+        headHealthBar = Instantiate(headHealthBar, new Vector3(0, 0, 0), Quaternion.identity);
+        headHealthBar.transform.SetParent(GameObject.Find("Canvas").transform);
+        headHealthBar.transform.position = new Vector3(0, 0, 0);
+        healthBar = GameObject.Find("HealthBar");
+        healthBar.GetComponent<HealthBar>().SetMaxHealth(maxHealth);
+        headHealthBar.GetComponent<HealthBar>().SetMaxHealth(maxHealth);
     }
 
     void OnHealthChange(int oldHealth, int newHealth)
