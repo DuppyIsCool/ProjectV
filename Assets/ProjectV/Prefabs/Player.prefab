@@ -22,6 +22,7 @@ GameObject:
   - component: {fileID: 7034395845003927227}
   - component: {fileID: -6634465397412629814}
   - component: {fileID: 3989587451451937191}
+  - component: {fileID: 8732299232969993995}
   m_Layer: 6
   m_Name: Player
   m_TagString: Player
@@ -249,7 +250,6 @@ MonoBehaviour:
   syncMode: 1
   syncInterval: 0.1
   size: 5
-  itemButtonPrefab: {fileID: 7646143058020868428, guid: a4c0723aab27e394bb9b57c703d5b369, type: 3}
 --- !u!114 &-2444637901970856388
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -329,3 +329,19 @@ MonoBehaviour:
   uniqueID: 8137985209626114823
   updateError: 0.2
   checkTime: 0.1
+--- !u!114 &8732299232969993995
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 3244946866032201212}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 3651c62b564e7b646af6c2fe90600c7a, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  syncDirection: 0
+  syncMode: 0
+  syncInterval: 0.1
+  itemButtonPrefab: {fileID: 7646143058020868428, guid: a4c0723aab27e394bb9b57c703d5b369, type: 3}
