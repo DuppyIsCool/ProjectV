@@ -22,6 +22,7 @@ GameObject:
   - component: {fileID: -6634465397412629814}
   - component: {fileID: 3989587451451937191}
   - component: {fileID: 8732299232969993995}
+  - component: {fileID: 3148256992289488089}
   m_Layer: 6
   m_Name: Player
   m_TagString: Player
@@ -300,23 +301,6 @@ MonoBehaviour:
   syncInterval: 0.1
   cooldownTime: 1.5
   rb: {fileID: 8245680476788521692}
---- !u!114 &3148256992289488089
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 3244946866032201212}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 85d0739ac58f303479ce8485c382c8fa, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  syncDirection: 0
-  syncMode: 0
-  syncInterval: 0.1
-  cooldownTime: 1.5
-  rb: {fileID: 8245680476788521692}
 --- !u!114 &3989587451451937191
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -349,3 +333,22 @@ MonoBehaviour:
   syncMode: 0
   syncInterval: 0.1
   itemButtonPrefab: {fileID: 7646143058020868428, guid: a4c0723aab27e394bb9b57c703d5b369, type: 3}
+--- !u!114 &3148256992289488089
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 3244946866032201212}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 85d0739ac58f303479ce8485c382c8fa, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  syncDirection: 0
+  syncMode: 0
+  syncInterval: 0.1
+  health: 0
+  maxHealth: 0
+  healthBar: {fileID: 5840835168660460350, guid: c7a4a89fcd8877b4b88ac3a5c5dbbcf3, type: 3}
+  headHealthBar: {fileID: 5840835168660460350, guid: c7a4a89fcd8877b4b88ac3a5c5dbbcf3, type: 3}
