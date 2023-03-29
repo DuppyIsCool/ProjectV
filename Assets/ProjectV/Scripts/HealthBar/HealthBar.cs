@@ -9,13 +9,15 @@ public class HealthBar : NetworkBehaviour
     private Transform bar;
     private float sizeNormalized;
 
-    private void Start()
+   /* private void Start()
     {
         bar = transform.Find("HealthActual");
         SetColor(Color.green);
-    }
+    }*/
     public void SetHealth(int maxHealth, int health)
     {
+        bar = transform.Find("HealthActual");
+        SetColor(Color.green);
         if(health <= 0){
             sizeNormalized = 0;
         }else{
