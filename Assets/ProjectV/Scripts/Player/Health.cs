@@ -9,9 +9,9 @@ public class Health : NetworkBehaviour
 
     [SyncVar(hook = nameof(OnHealthChange))]
     public int maxHealth;
-
+    
     public GameObject healthBar;
-    public GameObject headHealthBar;
+
     
     void Start()
     {
@@ -19,12 +19,10 @@ public class Health : NetworkBehaviour
         {
             health = maxHealth;
         }
-        headHealthBar = Instantiate(headHealthBar, new Vector3(0, 0, 0), Quaternion.identity);
-        headHealthBar.transform.SetParent(GameObject.Find("Canvas").transform);
-        headHealthBar.transform.position = new Vector3(0, 0, 0);
-        healthBar = GameObject.Find("HealthBar");
-        healthBar.GetComponent<HealthBar>().SetMaxHealth(maxHealth);
-        headHealthBar.GetComponent<HealthBar>().SetMaxHealth(maxHealth);
+        healthBar = Instantiate(healthBar, new Vector3 (gameObject.transform.position.x, gameObject.transform.position.y + (gameObject.GetComponent<Renderer>().bounds.size.y), 0), Quaternion.identity);
+        healthBar.transform.SetParent(gameObject.transform);
+        healthBar.transform.localScale = new Vector3 (gameObject.GetComponent<Renderer>().bounds.size.x * .008f, gameObject.GetComponent<Renderer>().bounds.size.y * .008f);
+        healthBar.GetComponent<HealthBar>().SetHealth(maxHealth, health);
     }
 
     void OnHealthChange(int oldHealth, int newHealth)
@@ -56,11 +54,12 @@ public class Health : NetworkBehaviour
         {
             print("Player object has died. Setting health back to full");
             health = maxHealth;
+            healthBar.GetComponent<HealthBar>().SetHealth(maxHealth, health);
         }
         else 
         {
             health -= amount;
-            healthBar.GetComponent<HealthBar>().SetHealth(health);
+            healthBar.GetComponent<HealthBar>().SetHealth(maxHealth, health);
             print("Player object took " + amount + " damage");
         }
     }
@@ -72,11 +71,12 @@ public class Health : NetworkBehaviour
         {
             print("Player object was healed to full died.");
             health = maxHealth;
+            healthBar.GetComponent<HealthBar>().SetHealth(maxHealth, health);
         }
         else
         {
             health += amount;
-            healthBar.GetComponent<HealthBar>().SetHealth(health);
+            healthBar.GetComponent<HealthBar>().SetHealth(maxHealth, health);
             print("Player object healed " + amount + " damage");
         }
     }
