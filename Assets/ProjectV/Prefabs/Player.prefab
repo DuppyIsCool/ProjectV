@@ -348,7 +348,7 @@ MonoBehaviour:
   syncDirection: 0
   syncMode: 0
   syncInterval: 0.1
-  health: 0
-  maxHealth: 0
+  health: 100
+  maxHealth: 100
   healthBar: {fileID: 5840835168660460350, guid: c7a4a89fcd8877b4b88ac3a5c5dbbcf3, type: 3}
   headHealthBar: {fileID: 5840835168660460350, guid: c7a4a89fcd8877b4b88ac3a5c5dbbcf3, type: 3}
