@@ -10,19 +10,23 @@ public class Health : NetworkBehaviour
     [SyncVar(hook = nameof(OnHealthChange))]
     public int maxHealth;
     
-    public GameObject healthBar;
+    [SerializeField]
+    private GameObject healthBarPrefab;
+    private GameObject healthBar;
+    private SpriteRenderer barRender;
 
-    
+    private Vector2 tempScale;
     void Start()
     {
         if (isServer) 
         {
             health = maxHealth;
         }
-        healthBar = Instantiate(healthBar, new Vector3 (gameObject.transform.position.x, gameObject.transform.position.y + (gameObject.GetComponent<Renderer>().bounds.size.y), 0), Quaternion.identity);
-        healthBar.transform.SetParent(gameObject.transform);
-        healthBar.transform.localScale = new Vector3 (gameObject.GetComponent<Renderer>().bounds.size.x * .008f, gameObject.GetComponent<Renderer>().bounds.size.y * .008f);
-        healthBar.GetComponent<HealthBar>().SetHealth(maxHealth, health);
+
+        healthBar = Instantiate(healthBarPrefab, new Vector3(gameObject.transform.position.x, gameObject.transform.position.y + (gameObject.GetComponent<Renderer>().bounds.size.y), 0), Quaternion.identity);
+        healthBar.transform.SetParent(gameObject.transform);   
+        barRender = healthBar.transform.GetChild(0).GetComponent<SpriteRenderer>();
+        UpdatePlayerHealthBar();
     }
 
     void OnHealthChange(int oldHealth, int newHealth)
@@ -34,6 +38,8 @@ public class Health : NetworkBehaviour
         {
             print("Server: Player object health changed from " + oldHealth + " to " + newHealth);
         }
+
+        UpdatePlayerHealthBar();
     }
 
     void OnMaxHealthChange(int oldMaxHealth, int newMaxHealth) 
@@ -45,6 +51,37 @@ public class Health : NetworkBehaviour
         {
             print("Server: Player object max health changed from " + oldMaxHealth + " to " + newMaxHealth);
         }
+
+        UpdatePlayerHealthBar();
+    }
+
+    void UpdatePlayerHealthBar() 
+    {
+        tempScale = healthBar.transform.GetChild(0).localScale;
+
+        if (health <= 0)
+        {
+            tempScale.x = 0;
+        }
+        else
+        {
+            tempScale.x = (float)health / (float)maxHealth;
+        }
+        if (tempScale.x > 0.66)
+        {
+            barRender.color = Color.green;
+        }
+        else if (tempScale.x > 0.33f)
+        {
+            barRender.color = Color.yellow;
+        }
+        else 
+        {
+            barRender.color = Color.red;
+        }
+        
+        healthBar.transform.GetChild(0).transform.localScale = tempScale;
+
     }
 
     [Server]
@@ -54,12 +91,10 @@ public class Health : NetworkBehaviour
         {
             print("Player object has died. Setting health back to full");
             health = maxHealth;
-            healthBar.GetComponent<HealthBar>().SetHealth(maxHealth, health);
         }
         else 
         {
             health -= amount;
-            healthBar.GetComponent<HealthBar>().SetHealth(maxHealth, health);
             print("Player object took " + amount + " damage");
         }
     }
@@ -71,12 +106,10 @@ public class Health : NetworkBehaviour
         {
             print("Player object was healed to full died.");
             health = maxHealth;
-            healthBar.GetComponent<HealthBar>().SetHealth(maxHealth, health);
         }
         else
         {
             health += amount;
-            healthBar.GetComponent<HealthBar>().SetHealth(maxHealth, health);
             print("Player object healed " + amount + " damage");
         }
     }
