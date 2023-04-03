@@ -133,9 +133,9 @@ GameObject:
   m_Component:
   - component: {fileID: 366186423}
   - component: {fileID: 366186422}
-  - component: {fileID: 366186421}
   - component: {fileID: 366186420}
   - component: {fileID: 366186419}
+  - component: {fileID: 366186424}
   m_Layer: 0
   m_Name: NetworkManager
   m_TagString: Untagged
@@ -169,33 +169,6 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   offsetX: 0
   offsetY: 0
---- !u!114 &366186421
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 366186418}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 6b0fecffa3f624585964b0d0eb21b18e, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  Port: 7777
-  DualMode: 1
-  NoDelay: 1
-  Interval: 10
-  Timeout: 10000
-  FastResend: 2
-  SendWindowSize: 4096
-  ReceiveWindowSize: 4096
-  MaxRetransmit: 40
-  MaximizeSocketBuffers: 1
-  ReliableMaxMessageSize: 298449
-  UnreliableMaxMessageSize: 1199
-  debugLog: 0
-  statisticsGUI: 0
-  statisticsLog: 0
 --- !u!114 &366186422
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -215,7 +188,7 @@ MonoBehaviour:
   sendRate: 30
   offlineScene: Assets/ProjectV/Scenes/OfflineScene.unity
   onlineScene: Assets/ProjectV/Scenes/OnlineScene.unity
-  transport: {fileID: 366186421}
+  transport: {fileID: 366186424}
   networkAddress: localhost
   maxConnections: 100
   authenticator: {fileID: 0}
@@ -244,6 +217,22 @@ Transform:
   m_Father: {fileID: 0}
   m_RootOrder: 2
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &366186424
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 366186418}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: e6e55fca1f4e4844593a3dd65a3ecb39, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  Channels: 0200000001000000
+  Timeout: 25
+  AllowSteamRelay: 1
+  UseNextGenSteamNetworking: 1
 --- !u!1 &532286362
 GameObject:
   m_ObjectHideFlags: 0
