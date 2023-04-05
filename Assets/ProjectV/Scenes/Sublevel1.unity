@@ -1340,7 +1340,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   version: 1
-  target: {fileID: 490580253}
+  target: {fileID: 0}
 --- !u!1 &1582391413
 GameObject:
   m_ObjectHideFlags: 0
@@ -30615,27 +30615,9 @@ PrefabInstance:
       propertyPath: m_LocalEulerAnglesHint.z
       value: 0
       objectReference: {fileID: 0}
+    - target: {fileID: 8911649218807432858, guid: 3acdb9d1d83a55f4485bc30b1979cfd0, type: 3}
+      propertyPath: destinationScene
+      value: Assets/ProjectV/Scenes/Sublevel2.unity
+      objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: 3acdb9d1d83a55f4485bc30b1979cfd0, type: 3}
---- !u!1 &3125242285166789041 stripped
-GameObject:
-  m_CorrespondingSourceObject: {fileID: 7690874190419658028, guid: 3acdb9d1d83a55f4485bc30b1979cfd0, type: 3}
-  m_PrefabInstance: {fileID: 3125242285166789040}
-  m_PrefabAsset: {fileID: 0}
---- !u!114 &3125242285166789042
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 3125242285166789041}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 269f24a7c5007ed448015249cd9a51e9, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  syncDirection: 0
-  syncMode: 0
-  syncInterval: 0.1
-  destinationScene: Assets/ProjectV/Scenes/Sublevel2.unity
-  startPosition: {x: 0, y: 0}

@@ -6,22 +6,23 @@ using System;
 public class Inventory : NetworkBehaviour
 {
     public readonly SyncList<InventoryItem> content = new SyncList<InventoryItem>();
-    [SerializeField] [SyncVar] private int size;
+    [SerializeField] [SyncVar] public int size;
     [SyncVar] public InventoryItem equippedItem = new InventoryItem().GetEmptyItem();
 
     [Server]
     private void SetupInventory() 
     {
-        //Initializing the Inventory would go here
-        print("Setup inventory here!");
+        for (int i = 0; i < size; i++)
+            content.Add(new InventoryItem().GetEmptyItem());
     }
 
-    private void Start()
+    public override void OnStartServer()
     {
-        if (isServer) 
+        if (isServer && content.Count == 0) 
         {
             SetupInventory();
         }
+        base.OnStartServer();
     }
 
     [Command]
@@ -41,21 +42,19 @@ public class Inventory : NetworkBehaviour
         //Loop to see if we can fit the item into a current stack
         for(int i = 0; i < content.Count; i++)
         {
+            if (content[i].item == null)
+            {
+                content[i] = content[i].ChangeItem(item, amount);
+                return true;
+            }
             //Check if the ids are the same and if the amount that would be added does not exceed the stack limit.
-            if (content[i].item.id == item.id && content[i].amount + amount <= content[i].item.stacklimit) 
+            else if (content[i].item.id == item.id && content[i].amount + amount <= content[i].item.stacklimit)
             {
                 content[i] = content[i].ChangeQuantity(content[i].amount + amount);
                 return true;
             }
         }
 
-        //If not, see if we can fit into its own stack in the inventory
-        if (content.Count + 1 <= size) 
-        {
-            InventoryItem newItem = new InventoryItem { item = item, amount = amount };
-            content.Add(newItem);
-            return true;
-        }
         return false;
     }
 
@@ -63,18 +62,28 @@ public class Inventory : NetworkBehaviour
     {
         foreach (InventoryItem invitem in content)
         {
-            if (invitem.amount + amount <= invitem.item.stacklimit && invitem.item.id == item.id)
+            if (invitem.item == null)
+            {
+                return true;
+            }
+            else if (invitem.amount + amount <= invitem.item.stacklimit && invitem.item.id == item.id)
             {
                 return true;
             }
         }
 
-        if (content.Count + 1 <= size)
-        {
-            return true;
-        }
-
         return false;
+    }
+
+    public InventoryItem GetItemAtSlot(int slot) 
+    {
+        if (slot >= 0 && slot < content.Count)
+            return content[slot];
+        else
+        {
+            Debug.LogError("Error grabbing item and out-of-bounds slot");
+            return new InventoryItem().GetEmptyItem();
+        }
     }
 
     public void Awake()
@@ -98,7 +107,14 @@ public struct InventoryItem
             amount = newAmount
         };
     }
-
+    public InventoryItem ChangeItem(Item newItem, int newAmount) 
+    {
+        return new InventoryItem
+        {
+            item = newItem,
+            amount = newAmount
+        };
+    }
     public InventoryItem GetEmptyItem()
         => new InventoryItem
         {
