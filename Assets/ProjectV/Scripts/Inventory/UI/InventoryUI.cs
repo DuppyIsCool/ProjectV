@@ -13,33 +13,36 @@ public class InventoryUI : NetworkBehaviour
     public void Update()
     {
         //Code for toggling the panel
-        if (Input.GetKeyDown(KeyCode.E)) 
+        if (Input.GetKeyDown(KeyCode.E) && isLocalPlayer) 
         {
             playerInventoryContainer.ToggleVisibility();
         }
     }
     public override void OnStartLocalPlayer() 
     {
-        //Get the UI gameobject
-        playerInventoryContainer = GameObject.Find("PlayerInventoryContainerUI").GetComponent<InventoryContainerUI>();
-        otherInventoryContainer = GameObject.Find("OtherInventoryContainerUI").GetComponent<InventoryContainerUI>();
-        currentInventory = gameObject.GetComponent<Inventory>();
-        currentInventory.content.Callback += PlayerInventoryUIUpdates;
-
-        //If its first time setup, add new empty elements.
-        if (playerInventoryContainer.transform.childCount == 0)
+        if (isLocalPlayer)
         {
-            playerInventoryContainer.Setup(currentInventory);
-        }
-        
+            //Get the UI gameobject
+            playerInventoryContainer = GameObject.Find("PlayerInventoryContainerUI").GetComponent<InventoryContainerUI>();
+            otherInventoryContainer = GameObject.Find("OtherInventoryContainerUI").GetComponent<InventoryContainerUI>();
+            currentInventory = gameObject.GetComponent<Inventory>();
+            currentInventory.content.Callback += PlayerInventoryUIUpdates;
 
-        // Process initial SyncList payload
-        for (int index = 0; index < currentInventory.content.Count; index++)
-        {
-            //This calls the InventoryUIUpdates, adding every item that is in the currentInventory
-            PlayerInventoryUIUpdates(SyncList<InventoryItem>.Operation.OP_SET, index, new InventoryItem(), currentInventory.content[index]);
-        }
+            //If its first time setup, add new empty elements.
+            if (playerInventoryContainer.transform.childCount == 0)
+            {
+                playerInventoryContainer.Setup(currentInventory);
+            }
 
+
+            // Process initial SyncList payload
+            for (int index = 0; index < currentInventory.content.Count; index++)
+            {
+                //This calls the InventoryUIUpdates, adding every item that is in the currentInventory
+                PlayerInventoryUIUpdates(SyncList<InventoryItem>.Operation.OP_SET, index, new InventoryItem(), currentInventory.content[index]);
+            }
+
+        }
         base.OnStartLocalPlayer();
 
     }

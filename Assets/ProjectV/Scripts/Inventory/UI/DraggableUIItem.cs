@@ -3,15 +3,12 @@ using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.EventSystems;
 using UnityEngine.UI;
-public class DraggableUIItem : MonoBehaviour, IBeginDragHandler, IDragHandler, IEndDragHandler
+public class DraggableUIItem : MonoBehaviour, IPointerClickHandler,IBeginDragHandler, IDragHandler, IEndDragHandler
 {
     [HideInInspector] public Transform parentAfterDrag;
     public void OnBeginDrag(PointerEventData eventData)
     {
-        parentAfterDrag = transform.parent;
-        transform.SetParent(transform.root);
-        transform.SetAsLastSibling();
-        GetComponent<Image>().raycastTarget = false;
+        
     }
 
     public void OnDrag(PointerEventData eventData)
@@ -23,5 +20,14 @@ public class DraggableUIItem : MonoBehaviour, IBeginDragHandler, IDragHandler, I
     {
         transform.SetParent(parentAfterDrag);
         GetComponent<Image>().raycastTarget = true;
+    }
+
+    public void OnPointerClick(PointerEventData eventData)
+    {
+        //If picking up
+        parentAfterDrag = transform.parent;
+        transform.SetParent(transform.root.Find("PointerSlot"));
+        transform.SetAsLastSibling();
+        GetComponent<Image>().raycastTarget = false;
     }
 }
