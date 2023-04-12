@@ -114,7 +114,24 @@ public class PlayerUse : NetworkBehaviour
 
             else if (equippedItem.item.GetType() == typeof(SwordItem))
             {
+                SwordItem sword = (SwordItem)equippedItem.item;
+
+                LayerMask enemy = LayerMask.GetMask("Player");
+
+                Collider2D[] attackCollisions = Physics2D.OverlapBoxAll(rb.position + tempdirection * 1f, direction, 180f, enemy);
+
+              foreach(Collider2D hit in attackCollisions)
+                {
+                    Debug.Log("Hello World");
+                    if(hit.gameObject.GetComponent<Health>() != null) // Check for Enemy health
+                    {
+                        hit.gameObject.GetComponent<Health>().ApplyDamage(5); // Apply damage here
+                    }
+                }
+
                 print("I am a sword");
+
+
             }
 
             else if (equippedItem.item.GetType() == typeof(Item))

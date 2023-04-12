@@ -2,17 +2,12 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
-public class SwordItem : MonoBehaviour
-{
-    // Start is called before the first frame update
-    void Start()
-    {
-        
-    }
 
-    // Update is called once per frame
-    void Update()
-    {
-        
-    }
+[CreateAssetMenu(fileName = "SwordItem", menuName = "Items/Weapon/Sword")]
+public class SwordItem : Item
+{
+    public GameObject clientPrefab;
+    public GameObject serverPrefab;
+    public float speed;
+    public int damage;
 }
