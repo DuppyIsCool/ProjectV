@@ -15,6 +15,9 @@ public class PlayerUse : NetworkBehaviour
     private Rigidbody2D rb;
 
     private Camera cam;
+
+    Vector2 mousePosition;
+
     private void Start()
     {
         cam = Camera.main;
@@ -26,7 +29,7 @@ public class PlayerUse : NetworkBehaviour
         if (!isLocalPlayer)
             return;
 
-        Vector2 mousePosition = cam.ScreenToWorldPoint(Input.mousePosition);
+        mousePosition = cam.ScreenToWorldPoint(Input.mousePosition);
 
         if (Input.GetButtonDown("Fire1"))
         {
@@ -91,6 +94,7 @@ public class PlayerUse : NetworkBehaviour
             DoUse(direction,item);
     }
 
+    
     //This is called by both server and clients to process the Use
     void DoUse(Vector2 direction, InventoryItem equippedItem) 
     {
@@ -118,7 +122,9 @@ public class PlayerUse : NetworkBehaviour
 
                 LayerMask enemy = LayerMask.GetMask("Player");
 
-                Collider2D[] attackCollisions = Physics2D.OverlapBoxAll(rb.position + tempdirection * 1f, direction, 180f, enemy);
+                Collider2D[] attackCollisions = Physics2D.OverlapCircleAll(rb.position + tempdirection, 2);
+
+                Debug.Log(attackCollisions.Length);
 
               foreach(Collider2D hit in attackCollisions)
                 {
@@ -170,4 +176,14 @@ public class PlayerUse : NetworkBehaviour
             }
         }
     }
+
+    private void OnDrawGizmos()
+    {
+        Vector2 tempvec = (mousePosition - this.GetComponent<Rigidbody2D>().position);
+        Vector3 myVec = new Vector3(tempvec.x, tempvec.y, 1);
+        myVec.Normalize();
+        
+        Gizmos.DrawWireSphere(myVec + (Vector3)(rb.position), 2);
+    }
+
 }
