@@ -25,3 +25,5 @@ MonoBehaviour:
   serverPrefab: {fileID: 0}
   speed: 5
   damage: 10
+  range: 2
+  width: 3
