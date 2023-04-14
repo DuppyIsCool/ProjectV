@@ -350,4 +350,5 @@ MonoBehaviour:
   syncInterval: 0.1
   health: 100
   maxHealth: 100
-  healthBarPrefab: {fileID: 2659785677730097011, guid: c7a4a89fcd8877b4b88ac3a5c5dbbcf3, type: 3}
+  HBPrefab: {fileID: 3242816683657420465, guid: 7c47d48b3f4d37844bd8701b78eda297, type: 3}
+  callerRender: {fileID: 0}
