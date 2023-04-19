@@ -1,15 +1,14 @@
-using System.Collections;
-using System.Collections.Generic;
 using UnityEngine;
 using Mirror;
-using UnityEngine.UI;
-using TMPro;
+
 public class InventoryUI : NetworkBehaviour
 {
     private GameObject playerInventory, otherInventory;
     private CanvasGroup playerGroup, otherGroup;
+    public enum ContainerType { Player, Other }
     [SerializeField]
-    private Inventory playerContent, otherContent;
+    public Inventory playerContent, otherContent;
+    public float interactionRange = 5f; // Add a customizable interaction range
     public void Update()
     {
         //Code for toggling the panel
@@ -26,7 +25,11 @@ public class InventoryUI : NetworkBehaviour
                 playerGroup.alpha = 0;
                 playerGroup.interactable = false;
             }
+        }
 
+        if (Input.GetKeyDown(KeyCode.Escape) && isLocalPlayer) 
+        {
+            RequestCloseOtherInventory();
         }
     }
     public override void OnStartLocalPlayer() 
@@ -41,9 +44,11 @@ public class InventoryUI : NetworkBehaviour
 
             playerContent.content.Callback += PlayerInventoryUIUpdates;
             //If its first time setup, add new empty elements.
+            playerInventory.GetComponent<InventoryContainerUI>().inventoryUI = this;
+            otherInventory.GetComponent<InventoryContainerUI>().inventoryUI = this;
             if (playerInventory.transform.childCount == 0)
             {
-                playerInventory.GetComponent<InventoryContainerUI>().Setup(playerInventory.GetComponent<Inventory>().size);
+                playerInventory.GetComponent<InventoryContainerUI>().Setup(GetComponent<Inventory>().size);
             }
 
             // Process initial SyncList payload
@@ -57,14 +62,44 @@ public class InventoryUI : NetworkBehaviour
         base.OnStartLocalPlayer();
     }
 
-    public void OpenOtherInventory(Inventory inv) 
+    public void OpenOtherInventory(Inventory inv)
     {
         if (isLocalPlayer)
         {
-            //Set the inventory
+            CmdCheckProximityAndOpen(inv.gameObject);
+        }
+    }
+    public InventoryItem GetItemAtSlot(int slot, ContainerType containerType)
+    {
+        if (containerType == ContainerType.Player)
+        {
+            return playerContent.content[slot];
+        }
+        else if (containerType == ContainerType.Other)
+        {
+            return otherContent.content[slot];
+        }
+        return new InventoryItem().GetEmptyItem();
+    }
+
+    [Command]
+    private void CmdCheckProximityAndOpen(GameObject otherInventoryObj)
+    {
+        if (Vector3.Distance(gameObject.transform.position, otherInventoryObj.transform.position) <= interactionRange)
+        {
+            TargetOpenOtherInventory(connectionToClient, otherInventoryObj.GetComponent<Inventory>());
+        }
+    }
+
+    [TargetRpc]
+    private void TargetOpenOtherInventory(NetworkConnection target, Inventory inv)
+    {
+        if (isLocalPlayer)
+        {
+            // Set the inventory
             otherContent = inv;
 
-            //Setup the UI
+            // Setup the UI
             otherContent.content.Callback += OtherInventoryUIUpdates;
 
             if (otherInventory.transform.childCount == 0)
@@ -78,65 +113,125 @@ public class InventoryUI : NetworkBehaviour
                 OtherInventoryUIUpdates(SyncList<InventoryItem>.Operation.OP_SET, index, new InventoryItem(), otherContent.content[index]);
             }
 
-            //Show the inventory
+            // Show the inventory
             otherGroup.alpha = 1;
             otherGroup.interactable = true;
         }
     }
 
-    public void CloseOtherInventory() 
+    public void RequestCloseOtherInventory()
     {
         if (isLocalPlayer)
         {
-            otherContent.content.Callback -= OtherInventoryUIUpdates;
-            otherInventory.GetComponent<InventoryContainerUI>().Clear();
-            otherContent = null;
-            otherGroup.alpha = 0;
-            otherGroup.interactable = false;
+            CmdRequestCloseOtherInventory();
         }
     }
 
-    public void MoveItem(GameObject senderContainer, GameObject receiverContainer, int fromSlot, int toSlot) 
+    [Command]
+    private void CmdRequestCloseOtherInventory()
+    {
+        TargetCloseOtherInventory(connectionToClient);
+    }
+
+    [TargetRpc]
+    private void TargetCloseOtherInventory(NetworkConnection target)
+    {
+        if (isLocalPlayer)
+        {
+            if (otherContent != null)
+            {
+                otherContent.content.Callback -= OtherInventoryUIUpdates;
+                otherInventory.GetComponent<InventoryContainerUI>().Clear();
+                otherContent = null;
+                otherGroup.alpha = 0;
+                otherGroup.interactable = false;
+            }
+        }
+    }
+
+    public void MoveItem(ContainerType senderType, ContainerType receiverType, int fromSlot, int toSlot, int moveAmount)
     {
         if (isLocalPlayer)
         {
             Inventory sender = null, receiver = null;
 
-            if (senderContainer.Equals(playerInventory))
+            if (senderType == ContainerType.Player)
             {
                 sender = playerContent;
             }
-            else if (senderContainer.Equals(otherInventory))
+            else if (senderType == ContainerType.Other)
             {
                 sender = otherContent;
             }
 
-            if (receiverContainer.Equals(playerInventory))
+            if (receiverType == ContainerType.Player)
             {
                 receiver = playerContent;
             }
-            else if (receiverContainer.Equals(otherInventory))
+            else if (receiverType == ContainerType.Other)
             {
                 receiver = otherContent;
             }
 
-            MoveItemCMD(sender, receiver, fromSlot, toSlot);
-        }     
+            MoveItemCMD(sender, receiver, fromSlot, toSlot, moveAmount);
+        }
     }
 
     [Command]
-    private void MoveItemCMD(Inventory sender, Inventory receiver, int fromSlot, int toSLot) 
+    private void MoveItemCMD(Inventory sender, Inventory receiver, int fromSlot, int toSlot, int moveAmount)
     {
-        if (sender != null && receiver != null) 
+        if (sender != null && receiver != null)
         {
-            //Out of bounds check
-            if ((sender.size > fromSlot && fromSlot >= 0) && (receiver.size > toSLot && toSLot >= 0)) 
+            // Out of bounds check
+            if ((sender.size > fromSlot && fromSlot >= 0) && (receiver.size > toSlot && toSlot >= 0))
             {
+                // Check if the destination slot is empty or the same item type and not exceeding the stack limit
+                if (receiver.content[toSlot].item == null ||
+                    (receiver.content[toSlot].item.id == sender.content[fromSlot].item.id &&
+                    receiver.content[toSlot].amount + moveAmount <= receiver.content[toSlot].item.stacklimit))
+                {
+                    // Add sender's item to the receiver's slot
+                    if (receiver.content[toSlot].item == null)
+                    {
+                        receiver.content[toSlot] = receiver.content[toSlot].ChangeItem(sender.content[fromSlot].item, moveAmount);
+                    }
+                    else
+                    {
+                        receiver.content[toSlot] = receiver.content[toSlot].ChangeQuantity(receiver.content[toSlot].amount + moveAmount);
+                    }
 
-
-
+                    // Update the sender's slot
+                    if (sender.content[fromSlot].amount - moveAmount <= 0)
+                    {
+                        sender.content[fromSlot] = sender.content[fromSlot].GetEmptyItem();
+                    }
+                    else
+                    {
+                        sender.content[fromSlot] = sender.content[fromSlot].ChangeQuantity(sender.content[fromSlot].amount - moveAmount);
+                    }
+                }
+                else
+                {
+                    // Swap items between sender's and receiver's slots
+                    InventoryItem tempItem = sender.content[fromSlot];
+                    sender.content[fromSlot] = receiver.content[toSlot];
+                    receiver.content[toSlot] = tempItem;
+                }
             }
         }
+    }
+
+    public int FindEmptySlot(ContainerType containerType)
+    {
+        Inventory targetInventory = containerType == ContainerType.Player ? playerContent : otherContent;
+        for (int i = 0; i < targetInventory.size; i++)
+        {
+            if (targetInventory.content[i].item == null)
+            {
+                return i;
+            }
+        }
+        return -1;
     }
 
     public override void OnStopClient()
@@ -164,7 +259,7 @@ public class InventoryUI : NetworkBehaviour
                     break;
 
                 case SyncList<InventoryItem>.Operation.OP_SET:
-                    playerInventory.GetComponent<InventoryContainerUI>().SetItem(oldItem, newItem, index);
+                    playerInventory.GetComponent<InventoryContainerUI>().SetItem(newItem, index);
                     break;
 
                 case SyncList<InventoryItem>.Operation.OP_REMOVEAT:
@@ -192,7 +287,7 @@ public class InventoryUI : NetworkBehaviour
                     break;
 
                 case SyncList<InventoryItem>.Operation.OP_SET:
-                    otherInventory.GetComponent<InventoryContainerUI>().SetItem(oldItem, newItem, index);
+                    otherInventory.GetComponent<InventoryContainerUI>().SetItem(newItem, index);
                     break;
 
                 case SyncList<InventoryItem>.Operation.OP_REMOVEAT:

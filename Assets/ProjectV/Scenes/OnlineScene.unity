@@ -159,9 +159,9 @@ RectTransform:
   m_Father: {fileID: 171657414}
   m_RootOrder: 0
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
-  m_AnchorMin: {x: 0.5, y: 0.5}
-  m_AnchorMax: {x: 0.5, y: 0.5}
-  m_AnchoredPosition: {x: -469.32764, y: -148.3379}
+  m_AnchorMin: {x: 0, y: 0.5}
+  m_AnchorMax: {x: 0, y: 0.5}
+  m_AnchoredPosition: {x: 258.67236, y: -55.58789}
   m_SizeDelta: {x: 452.3448, y: 562.0758}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!114 &113313843
@@ -177,10 +177,10 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   m_Padding:
-    m_Left: 11
-    m_Right: 0
+    m_Left: 10
+    m_Right: 10
     m_Top: 11
-    m_Bottom: 0
+    m_Bottom: 10
   m_ChildAlignment: 0
   m_StartCorner: 0
   m_StartAxis: 0
@@ -201,15 +201,15 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   m_Material: {fileID: 0}
-  m_Color: {r: 1, g: 1, b: 1, a: 0.015686275}
+  m_Color: {r: 1, g: 1, b: 1, a: 1}
   m_RaycastTarget: 1
   m_RaycastPadding: {x: 0, y: 0, z: 0, w: 0}
   m_Maskable: 1
   m_OnCullStateChanged:
     m_PersistentCalls:
       m_Calls: []
-  m_Sprite: {fileID: 0}
-  m_Type: 0
+  m_Sprite: {fileID: 21300000, guid: 929bd70e90de05c4781b7c98f0e5e9bb, type: 3}
+  m_Type: 1
   m_PreserveAspect: 0
   m_FillCenter: 1
   m_FillMethod: 4
@@ -238,8 +238,9 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 1289cb21f38b89b438206be109dd4aa3, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  currentInventory: {fileID: 0}
   itemSlotPrefab: {fileID: 4012760273506838213, guid: bb9991c06fe7bf342a20fbd3c34825a4, type: 3}
+  inventoryUI: {fileID: 0}
+  containerType: 0
 --- !u!225 &113313847
 CanvasGroup:
   m_ObjectHideFlags: 0
@@ -248,8 +249,8 @@ CanvasGroup:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 113313841}
   m_Enabled: 1
-  m_Alpha: 1
-  m_Interactable: 1
+  m_Alpha: 0
+  m_Interactable: 0
   m_BlocksRaycasts: 1
   m_IgnoreParentGroups: 0
 --- !u!1 &171657410
@@ -461,10 +462,10 @@ RectTransform:
   m_Father: {fileID: 171657414}
   m_RootOrder: 1
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
-  m_AnchorMin: {x: 0.5, y: 0.5}
-  m_AnchorMax: {x: 0.5, y: 0.5}
-  m_AnchoredPosition: {x: 465.67233, y: -148.3379}
-  m_SizeDelta: {x: 452.3448, y: 562.0758}
+  m_AnchorMin: {x: 1, y: 0.5}
+  m_AnchorMax: {x: 1, y: 0.5}
+  m_AnchoredPosition: {x: -262.32767, y: -53.83789}
+  m_SizeDelta: {x: 452.34473, y: 562.0758}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!114 &1052934547
 MonoBehaviour:
@@ -478,8 +479,9 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 1289cb21f38b89b438206be109dd4aa3, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  currentInventory: {fileID: 0}
   itemSlotPrefab: {fileID: 4012760273506838213, guid: bb9991c06fe7bf342a20fbd3c34825a4, type: 3}
+  inventoryUI: {fileID: 0}
+  containerType: 1
 --- !u!114 &1052934548
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -517,15 +519,15 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   m_Material: {fileID: 0}
-  m_Color: {r: 1, g: 1, b: 1, a: 0.015686275}
+  m_Color: {r: 1, g: 1, b: 1, a: 1}
   m_RaycastTarget: 1
   m_RaycastPadding: {x: 0, y: 0, z: 0, w: 0}
   m_Maskable: 1
   m_OnCullStateChanged:
     m_PersistentCalls:
       m_Calls: []
-  m_Sprite: {fileID: 0}
-  m_Type: 0
+  m_Sprite: {fileID: 21300000, guid: 929bd70e90de05c4781b7c98f0e5e9bb, type: 3}
+  m_Type: 1
   m_PreserveAspect: 0
   m_FillCenter: 1
   m_FillMethod: 4
@@ -550,8 +552,8 @@ CanvasGroup:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1052934545}
   m_Enabled: 1
-  m_Alpha: 1
-  m_Interactable: 1
+  m_Alpha: 0
+  m_Interactable: 0
   m_BlocksRaycasts: 1
   m_IgnoreParentGroups: 0
 --- !u!1 &1313898716

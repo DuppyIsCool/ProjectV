@@ -332,7 +332,9 @@ MonoBehaviour:
   syncDirection: 0
   syncMode: 0
   syncInterval: 0.1
-  itemSlotPrefab: {fileID: 4012760273506838213, guid: bb9991c06fe7bf342a20fbd3c34825a4, type: 3}
+  playerContent: {fileID: -8757130696875760200}
+  otherContent: {fileID: 0}
+  interactionRange: 5
 --- !u!114 &3148256992289488089
 MonoBehaviour:
   m_ObjectHideFlags: 0

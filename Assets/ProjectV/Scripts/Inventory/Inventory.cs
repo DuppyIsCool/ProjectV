@@ -39,18 +39,28 @@ public class Inventory : NetworkBehaviour
     public bool AddItem(Item item, int amount) 
     {
 
-        //Loop to see if we can fit the item into a current stack
+        //Loop to see if we can fit the item into a current stack or an empty slot
         for(int i = 0; i < content.Count; i++)
         {
+            if (content[i].item != null)
+            {
+                //Check if the ids are the same and if the amount that would be added does not exceed the stack limit.
+                if (content[i].item.id == item.id && content[i].amount + amount <= content[i].item.stacklimit)
+                {
+                    content[i] = content[i].ChangeQuantity(content[i].amount + amount);
+                    return true;
+                }
+            }
+
+        }
+
+        //Loop to see if we can fit it into an empty slot
+        for (int i = 0; i < content.Count; i++)
+        {
+            //Empty slot
             if (content[i].item == null)
             {
                 content[i] = content[i].ChangeItem(item, amount);
-                return true;
-            }
-            //Check if the ids are the same and if the amount that would be added does not exceed the stack limit.
-            else if (content[i].item.id == item.id && content[i].amount + amount <= content[i].item.stacklimit)
-            {
-                content[i] = content[i].ChangeQuantity(content[i].amount + amount);
                 return true;
             }
         }
