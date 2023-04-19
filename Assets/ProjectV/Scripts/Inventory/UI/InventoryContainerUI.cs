@@ -7,45 +7,15 @@ using Mirror;
 public class InventoryContainerUI : MonoBehaviour
 {
     private GameObject currentItem;
-    public Inventory currentInventory;
     [SerializeField] private GameObject itemSlotPrefab;
-    CanvasGroup panelCanvas;
-    public void Setup(Inventory panelInventory) 
+    public void Setup(int size) 
     {
-        panelCanvas = transform.parent.gameObject.GetComponent<CanvasGroup>();
-        currentInventory = panelInventory;
-        for (int i = 0; i < currentInventory.size; i++)
+        for (int i = 0; i < size; i++)
         {
             currentItem = Instantiate(itemSlotPrefab, transform);
             currentItem.transform.Find("Item").GetComponent<Image>().sprite = null;
             currentItem.transform.Find("Item").Find("Amount").GetComponent<TMP_Text>().text = "";
         }
-    }
-
-    public void ToggleVisibility() 
-    {
-        if (panelCanvas.alpha == 1)
-        {
-
-            panelCanvas.alpha = 0;
-            panelCanvas.interactable = false;
-        }
-        else 
-        {
-            panelCanvas.alpha = 1;
-            panelCanvas.interactable = true;
-        }
-    }
-
-    public void MoveItem(int mySlot, InventoryContainerUI otherInventory, int otherSlot) 
-    {
-        //If moving to self
-        if (otherInventory = this)
-        {
-            Debug.Log("MYSELF");
-        }
-        Debug.Log("IS OTHER OWNED: " + otherInventory.currentInventory.isOwned);
-        Debug.Log("AM I OWNED?: " + currentInventory.isOwned);
     }
 
     public void SetItem(InventoryItem oldItem, InventoryItem newItem, int slot) 
