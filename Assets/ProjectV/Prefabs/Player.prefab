@@ -351,6 +351,38 @@ MonoBehaviour:
   syncDirection: 0
   syncMode: 0
   syncInterval: 0.1
-  health: 100
   maxHealth: 100
-  healthBarPrefab: {fileID: 2659785677730097011, guid: c7a4a89fcd8877b4b88ac3a5c5dbbcf3, type: 3}
+  currentHealth: 100
+  healthSlider: {fileID: 0}
+  healthGradient:
+    serializedVersion: 2
+    key0: {r: 1, g: 0, b: 0, a: 1}
+    key1: {r: 1, g: 0.92332065, b: 0, a: 1}
+    key2: {r: 0.9660845, g: 1, b: 0, a: 1}
+    key3: {r: 0, g: 1, b: 0.03011465, a: 1}
+    key4: {r: 0, g: 1, b: 0.03011465, a: 1}
+    key5: {r: 0, g: 0, b: 0, a: 0}
+    key6: {r: 0, g: 0, b: 0, a: 0}
+    key7: {r: 0, g: 0, b: 0, a: 0}
+    ctime0: 19275
+    ctime1: 19661
+    ctime2: 38936
+    ctime3: 39899
+    ctime4: 41249
+    ctime5: 0
+    ctime6: 0
+    ctime7: 0
+    atime0: 0
+    atime1: 65535
+    atime2: 65535
+    atime3: 51464
+    atime4: 51464
+    atime5: 0
+    atime6: 0
+    atime7: 0
+    m_Mode: 0
+    m_NumColorKeys: 4
+    m_NumAlphaKeys: 2
+  fill: {fileID: 0}
+  damageColor: {r: 1, g: 0, b: 0, a: 0.8509804}
+  damageFlashDuration: 0.3
