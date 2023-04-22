@@ -1,82 +1,102 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.UI;
 using Mirror;
 public class Health : NetworkBehaviour
 {
-    [SyncVar(hook = nameof(OnHealthChange))]
-    public int health;
+    [SerializeField] private int maxHealth = 100;
+    [SerializeField]
+    [SyncVar(hook = nameof(OnHealthChanged))] private int currentHealth;
 
-    [SyncVar(hook = nameof(OnHealthChange))]
-    public int maxHealth;
+    [SerializeField] private Slider healthSlider;
+    [SerializeField] private Gradient healthGradient;
+    [SerializeField] private Image fill;
 
-    public GameObject healthBar;
-    public GameObject headHealthBar;
-    
-    void Start()
+    private Material originalMaterial;
+    private Color originalColor;
+    [SerializeField] private Color damageColor = new Color(1, 0, 0, 0.3f);
+    [SerializeField] private float damageFlashDuration = 0.3f;
+
+    public override void OnStartLocalPlayer()
     {
-        if (isServer) 
-        {
-            health = maxHealth;
-        }
-        headHealthBar = Instantiate(headHealthBar, new Vector3(0, 0, 0), Quaternion.identity);
-        headHealthBar.transform.SetParent(GameObject.Find("Canvas").transform);
-        headHealthBar.transform.position = new Vector3(0, 0, 0);
-        healthBar = GameObject.Find("HealthBar");
-        healthBar.GetComponent<HealthBar>().SetMaxHealth(maxHealth);
-        headHealthBar.GetComponent<HealthBar>().SetMaxHealth(maxHealth);
+        base.OnStartLocalPlayer();
+        GameObject canvasSlider = GameObject.Find("Canvas").transform.Find("HealthBar").gameObject;
+        canvasSlider.SetActive(true);
+        healthSlider = canvasSlider.GetComponent<Slider>();
+        fill = canvasSlider.transform.GetChild(0).GetComponent<Image>();
+
+        UpdateHealthUI();
     }
 
-    void OnHealthChange(int oldHealth, int newHealth)
+    private void Start()
     {
-        if (isClientOnly)
-            print("Client: My health changed from " + oldHealth + " to " + newHealth);
-
-        if (isServer)
-        {
-            print("Server: Player object health changed from " + oldHealth + " to " + newHealth);
-        }
+        Renderer renderer = GetComponent<Renderer>();
+        originalMaterial = renderer.material;
+        originalColor = originalMaterial.color;
     }
 
-    void OnMaxHealthChange(int oldMaxHealth, int newMaxHealth) 
+    [ClientRpc]
+    public void RpcTakeDamage(int damage)
     {
-        if (isClientOnly)
-            print("Client: My max health changed from " + oldMaxHealth + " to " + newMaxHealth);
-
-        if (isServer)
+        if (currentHealth <= 0)
         {
-            print("Server: Player object max health changed from " + oldMaxHealth + " to " + newMaxHealth);
+            // Handle player death here (e.g., respawn, disable movement, etc.)
         }
+
+        StartCoroutine(FlashDamage());
+    }
+
+    private void OnHealthChanged(int oldHealth, int newHealth)
+    {
+        if(isLocalPlayer)
+            UpdateHealthUI();
+    }
+
+    private void UpdateHealthUI()
+    {
+        healthSlider.value = (float)currentHealth / maxHealth;
+        fill.color = healthGradient.Evaluate(healthSlider.normalizedValue);
+    }
+
+    private IEnumerator FlashDamage()
+    {
+        Renderer renderer = GetComponent<Renderer>();
+        renderer.material.color = damageColor;
+
+        yield return new WaitForSeconds(damageFlashDuration);
+
+        renderer.material.color = originalColor;
     }
 
     [Server]
     public void ApplyDamage(int amount)
     {
-        if ((health - amount) <= 0)
+        if ((currentHealth - amount) <= 0)
         {
             print("Player object has died. Setting health back to full");
-            health = maxHealth;
+            currentHealth = 100;  
+            //health = maxHealth;
         }
         else 
         {
-            health -= amount;
-            healthBar.GetComponent<HealthBar>().SetHealth(health);
+            currentHealth -= amount;
             print("Player object took " + amount + " damage");
+            RpcTakeDamage(currentHealth);
         }
     }
 
     [Server]
     public void Heal(int amount) 
     {
-        if ((health + amount) >= maxHealth)
+        if ((currentHealth + amount) >= maxHealth)
         {
             print("Player object was healed to full died.");
-            health = maxHealth;
+            currentHealth = maxHealth;
         }
         else
         {
-            health += amount;
-            healthBar.GetComponent<HealthBar>().SetHealth(health);
+            currentHealth += amount;
             print("Player object healed " + amount + " damage");
         }
     }
