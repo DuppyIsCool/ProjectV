@@ -640,7 +640,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 3242816683089571026, guid: 7c47d48b3f4d37844bd8701b78eda297, type: 3}
       propertyPath: m_AnchorMax.y
-      value: 0
+      value: 1
       objectReference: {fileID: 0}
     - target: {fileID: 3242816683657420464, guid: 7c47d48b3f4d37844bd8701b78eda297, type: 3}
       propertyPath: m_Pivot.x
@@ -728,7 +728,15 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 3242816683657420465, guid: 7c47d48b3f4d37844bd8701b78eda297, type: 3}
       propertyPath: m_Name
-      value: HealthBar 1
+      value: HealthBar
+      objectReference: {fileID: 0}
+    - target: {fileID: 3242816683657420465, guid: 7c47d48b3f4d37844bd8701b78eda297, type: 3}
+      propertyPath: m_IsActive
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 3242816683657420478, guid: 7c47d48b3f4d37844bd8701b78eda297, type: 3}
+      propertyPath: m_Value
+      value: 0
       objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: 7c47d48b3f4d37844bd8701b78eda297, type: 3}
