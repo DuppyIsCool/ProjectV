@@ -3,7 +3,9 @@ guid: 85d0739ac58f303479ce8485c382c8fa
 MonoImporter:
   externalObjects: {}
   serializedVersion: 2
-  defaultReferences: []
+  defaultReferences:
+  - HBPrefab: {fileID: 3242816683657420465, guid: 7c47d48b3f4d37844bd8701b78eda297, type: 3}
+  - callerRender: {instanceID: 0}
   executionOrder: 0
   icon: {instanceID: 0}
   userData: 

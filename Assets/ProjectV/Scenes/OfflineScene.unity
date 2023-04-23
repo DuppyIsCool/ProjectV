@@ -227,6 +227,9 @@ MonoBehaviour:
   additiveScenes:
   - Assets/ProjectV/Scenes/Sublevel1.unity
   - Assets/ProjectV/Scenes/Sublevel2.unity
+  - Assets/ProjectV/Scenes/DungeonLevel1.unity
+  - Assets/ProjectV/Scenes/DungeonLevel2.unity
+  - Assets/ProjectV/Scenes/DungeonLevel3.unity
   fadeInOut: {fileID: 532286367}
 --- !u!4 &366186423
 Transform:

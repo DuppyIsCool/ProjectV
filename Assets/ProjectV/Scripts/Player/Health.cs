@@ -1,115 +1,102 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.UI;
 using Mirror;
 public class Health : NetworkBehaviour
 {
-    [SyncVar(hook = nameof(OnHealthChange))]
-    public int health;
-
-    [SyncVar(hook = nameof(OnHealthChange))]
-    public int maxHealth;
-    
+    [SerializeField] private int maxHealth = 100;
     [SerializeField]
-    private GameObject healthBarPrefab;
-    private GameObject healthBar;
-    private SpriteRenderer barRender;
+    [SyncVar(hook = nameof(OnHealthChanged))] private int currentHealth;
 
-    private Vector2 tempScale;
-    void Start()
+    [SerializeField] private Slider healthSlider;
+    [SerializeField] private Gradient healthGradient;
+    [SerializeField] private Image fill;
+
+    private Material originalMaterial;
+    private Color originalColor;
+    [SerializeField] private Color damageColor = new Color(1, 0, 0, 0.3f);
+    [SerializeField] private float damageFlashDuration = 0.3f;
+
+    public override void OnStartLocalPlayer()
     {
-        if (isServer) 
-        {
-            health = maxHealth;
-        }
+        base.OnStartLocalPlayer();
+        GameObject canvasSlider = GameObject.Find("Canvas").transform.Find("HealthBar").gameObject;
+        canvasSlider.SetActive(true);
+        healthSlider = canvasSlider.GetComponent<Slider>();
+        fill = canvasSlider.transform.GetChild(0).GetComponent<Image>();
 
-        healthBar = Instantiate(healthBarPrefab, new Vector3(gameObject.transform.position.x, gameObject.transform.position.y + (gameObject.GetComponent<Renderer>().bounds.size.y), 0), Quaternion.identity);
-        healthBar.transform.SetParent(gameObject.transform);   
-        barRender = healthBar.transform.GetChild(0).GetComponent<SpriteRenderer>();
-        UpdatePlayerHealthBar();
+        UpdateHealthUI();
     }
 
-    void OnHealthChange(int oldHealth, int newHealth)
+    private void Start()
     {
-        if (isClientOnly)
-            print("Client: My health changed from " + oldHealth + " to " + newHealth);
-
-        if (isServer)
-        {
-            print("Server: Player object health changed from " + oldHealth + " to " + newHealth);
-        }
-
-        UpdatePlayerHealthBar();
+        Renderer renderer = GetComponent<Renderer>();
+        originalMaterial = renderer.material;
+        originalColor = originalMaterial.color;
     }
 
-    void OnMaxHealthChange(int oldMaxHealth, int newMaxHealth) 
+    [ClientRpc]
+    public void RpcTakeDamage(int damage)
     {
-        if (isClientOnly)
-            print("Client: My max health changed from " + oldMaxHealth + " to " + newMaxHealth);
-
-        if (isServer)
+        if (currentHealth <= 0)
         {
-            print("Server: Player object max health changed from " + oldMaxHealth + " to " + newMaxHealth);
+            // Handle player death here (e.g., respawn, disable movement, etc.)
         }
 
-        UpdatePlayerHealthBar();
+        StartCoroutine(FlashDamage());
     }
 
-    void UpdatePlayerHealthBar() 
+    private void OnHealthChanged(int oldHealth, int newHealth)
     {
-        tempScale = healthBar.transform.GetChild(0).localScale;
+        if(isLocalPlayer)
+            UpdateHealthUI();
+    }
 
-        if (health <= 0)
-        {
-            tempScale.x = 0;
-        }
-        else
-        {
-            tempScale.x = (float)health / (float)maxHealth;
-        }
-        if (tempScale.x > 0.66)
-        {
-            barRender.color = Color.green;
-        }
-        else if (tempScale.x > 0.33f)
-        {
-            barRender.color = Color.yellow;
-        }
-        else 
-        {
-            barRender.color = Color.red;
-        }
-        
-        healthBar.transform.GetChild(0).transform.localScale = tempScale;
+    private void UpdateHealthUI()
+    {
+        healthSlider.value = (float)currentHealth / maxHealth;
+        fill.color = healthGradient.Evaluate(healthSlider.normalizedValue);
+    }
 
+    private IEnumerator FlashDamage()
+    {
+        Renderer renderer = GetComponent<Renderer>();
+        renderer.material.color = damageColor;
+
+        yield return new WaitForSeconds(damageFlashDuration);
+
+        renderer.material.color = originalColor;
     }
 
     [Server]
     public void ApplyDamage(int amount)
     {
-        if ((health - amount) <= 0)
+        if ((currentHealth - amount) <= 0)
         {
             print("Player object has died. Setting health back to full");
-            health = maxHealth;
+            currentHealth = 100;  
+            //health = maxHealth;
         }
         else 
         {
-            health -= amount;
+            currentHealth -= amount;
             print("Player object took " + amount + " damage");
+            RpcTakeDamage(currentHealth);
         }
     }
 
     [Server]
     public void Heal(int amount) 
     {
-        if ((health + amount) >= maxHealth)
+        if ((currentHealth + amount) >= maxHealth)
         {
             print("Player object was healed to full died.");
-            health = maxHealth;
+            currentHealth = maxHealth;
         }
         else
         {
-            health += amount;
+            currentHealth += amount;
             print("Player object healed " + amount + " damage");
         }
     }

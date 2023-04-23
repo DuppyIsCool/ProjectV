@@ -12,7 +12,7 @@ GameObject:
   - component: {fileID: 3125242284930946256}
   - component: {fileID: 3125242284930946287}
   - component: {fileID: 3125242284930946285}
-  - component: {fileID: 8911649218807432858}
+  - component: {fileID: 4673669056150135443}
   m_Layer: 7
   m_Name: Portal
   m_TagString: Untagged
@@ -130,7 +130,7 @@ BoxCollider2D:
   serializedVersion: 2
   m_Size: {x: 1, y: 1}
   m_EdgeRadius: 0
---- !u!114 &8911649218807432858
+--- !u!114 &4673669056150135443
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
