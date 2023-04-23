@@ -254,7 +254,7 @@ MonoBehaviour:
   syncDirection: 0
   syncMode: 1
   syncInterval: 0.1
-  size: 5
+  size: 20
 --- !u!114 &-2444637901970856388
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -335,7 +335,9 @@ MonoBehaviour:
   syncDirection: 0
   syncMode: 0
   syncInterval: 0.1
-  itemButtonPrefab: {fileID: 7646143058020868428, guid: a4c0723aab27e394bb9b57c703d5b369, type: 3}
+  playerContent: {fileID: -8757130696875760200}
+  otherContent: {fileID: 0}
+  interactionRange: 5
 --- !u!114 &3148256992289488089
 MonoBehaviour:
   m_ObjectHideFlags: 0
