@@ -9,6 +9,7 @@ public class InventoryUI : NetworkBehaviour
     [SerializeField]
     public Inventory playerContent, otherContent;
     public float interactionRange = 5f; // Add a customizable interaction range
+    public GameObject border;
     public void Update()
     {
         //Code for toggling the panel
@@ -37,6 +38,7 @@ public class InventoryUI : NetworkBehaviour
         if (isLocalPlayer)
         {
             //Get the UI gameobject
+            border = GameObject.Find("ItemBorder");
             playerInventory = GameObject.Find("PlayerInventory");
             otherInventory = GameObject.Find("OtherInventory");
             playerGroup = playerInventory.GetComponent<CanvasGroup>();
@@ -219,6 +221,11 @@ public class InventoryUI : NetworkBehaviour
                 }
             }
         }
+    }
+
+    public void EquipItem(int slot) 
+    {
+        playerContent.EquipItemCmd(slot);
     }
 
     public int FindEmptySlot(ContainerType containerType)

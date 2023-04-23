@@ -91,6 +91,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 4efddccf2036b3f45a2e94be6aed8ca7, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  borderPrefab: {fileID: 1883524124905043686, guid: 9422c1dc15b65a34eaff92220b1f3398, type: 3}
 --- !u!225 &5384266465307158974
 CanvasGroup:
   m_ObjectHideFlags: 0

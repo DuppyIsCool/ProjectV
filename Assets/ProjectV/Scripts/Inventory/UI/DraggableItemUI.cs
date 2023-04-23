@@ -12,6 +12,15 @@ public class DraggableItemUI : MonoBehaviour, IPointerDownHandler, IPointerUpHan
     private int moveAmount;
     private bool isRightClick;
     int fromSlotIndex;
+
+    private float doubleClickThreshold = 0.5f;
+    private float lastClickTime;
+
+    private Transform originalParent;
+    private int originalSiblingIndex;
+
+    public static GameObject itemBorder;
+
     private void Awake()
     {
         canvas = GetComponentInParent<Canvas>();
@@ -19,6 +28,7 @@ public class DraggableItemUI : MonoBehaviour, IPointerDownHandler, IPointerUpHan
         canvasGroup = GetComponent<CanvasGroup>();
         containerUI = GetComponentInParent<InventoryContainerUI>();
         inventoryUI = containerUI.inventoryUI;
+        itemBorder = inventoryUI.border;
     }
 
     public void OnPointerDown(PointerEventData eventData)
@@ -26,9 +36,23 @@ public class DraggableItemUI : MonoBehaviour, IPointerDownHandler, IPointerUpHan
         originalPosition = rectTransform.anchoredPosition;
         int slotIndex = transform.parent.GetSiblingIndex();
         fromSlotIndex = transform.parent.GetSiblingIndex();
+
         // Left click
         if (eventData.button == PointerEventData.InputButton.Left)
         {
+            float currentTime = Time.time;
+            if (currentTime - lastClickTime <= doubleClickThreshold)
+            {
+                OnItemDoubleClicked(slotIndex);
+                MoveBorderToSlot(this);
+                lastClickTime = 0;
+                return;
+            }
+            else
+            {
+                lastClickTime = currentTime;
+            }
+
             moveAmount = inventoryUI.GetItemAtSlot(slotIndex, containerUI.containerType).amount;
             isRightClick = false;
         }
@@ -49,6 +73,10 @@ public class DraggableItemUI : MonoBehaviour, IPointerDownHandler, IPointerUpHan
     {
         canvasGroup.blocksRaycasts = false;
         canvasGroup.alpha = 0.6f;
+
+        originalParent = transform.parent;
+        originalSiblingIndex = transform.GetSiblingIndex();
+        transform.SetParent(canvas.transform); // Move the item to the root of the canvas
     }
 
     public void OnDrag(PointerEventData eventData)
@@ -61,13 +89,16 @@ public class DraggableItemUI : MonoBehaviour, IPointerDownHandler, IPointerUpHan
         canvasGroup.blocksRaycasts = true;
         canvasGroup.alpha = 1f;
 
+        // Revert the parent and sibling index back to their original values
+        transform.SetParent(originalParent);
+        transform.SetSiblingIndex(originalSiblingIndex);
+
         // Check if the pointer is on a valid item slot
         GameObject targetObj = eventData.pointerEnter;
         if (targetObj != null && targetObj.transform.parent.GetComponent<InventoryContainerUI>() != null)
         {
             int fromSlot = fromSlotIndex;
             int toSlot = targetObj.transform.GetSiblingIndex();
-            Debug.Log(fromSlot + " to " + toSlot);
             InventoryUI.ContainerType fromContainerType = containerUI.containerType;
             InventoryUI.ContainerType toContainerType = targetObj.transform.parent.GetComponent<InventoryContainerUI>().containerType;
 
@@ -79,12 +110,30 @@ public class DraggableItemUI : MonoBehaviour, IPointerDownHandler, IPointerUpHan
             {
                 // If the target slot is empty or contains a different item, move half of the stack back to the original slot
                 InventoryItem targetItem = inventoryUI.GetItemAtSlot(toSlot, toContainerType);
-                if (targetItem.item == null || targetItem.item.id != inventoryUI.GetItemAtSlot(fromSlot, fromContainerType).item.id)
+                if (targetItem.item == null || targetItem.item.id != inventoryUI.GetItemAtSlot(fromSlot, fromContainerType).item?.id)
                 {
                     inventoryUI.MoveItem(toContainerType, fromContainerType, toSlot, fromSlot, moveAmount);
                 }
             }
             fromSlotIndex = 0;
         }
+    }
+
+    private void MoveBorderToSlot(DraggableItemUI item)
+    {
+        if (itemBorder != null)
+        {
+            if(itemBorder.GetComponent<CanvasGroup>().alpha == 0)
+                itemBorder.GetComponent<CanvasGroup>().alpha = 1;
+
+            itemBorder.transform.SetParent(item.transform, false);
+            itemBorder.transform.SetSiblingIndex(0);
+            itemBorder.SetActive(true);
+        }
+    }
+
+    public void OnItemDoubleClicked(int slot)
+    {
+        inventoryUI.EquipItem(slot);
     }
 }
