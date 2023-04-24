@@ -12,6 +12,8 @@ public class PlayerUse : NetworkBehaviour
     private float cooldownTime;
     public LayerMask enemyLayer;
     [SerializeField]
+    private Animator animator;
+    [SerializeField]
     private Rigidbody2D rb;
 
     private Camera cam;
@@ -54,8 +56,38 @@ public class PlayerUse : NetworkBehaviour
             CmdUse(direction);
 
             //Use the item on the client
-            if(isClientOnly)
-                DoUse(direction,equippedItem);
+            if (isClientOnly)
+            {
+                DoUse(direction, equippedItem);      
+            }
+
+            if(isClient)
+                if (equippedItem.item.GetType() == typeof(SwordItem))
+                {
+                    Vector2 tempdirection = direction;
+                    tempdirection -= this.GetComponent<Rigidbody2D>().position;
+                    tempdirection.Normalize();
+
+                    float absX = Mathf.Abs(tempdirection.x);
+                    float absY = Mathf.Abs(tempdirection.y);
+                    Debug.Log(absX + " " + absY);
+                    if (absX > absY)
+                    {
+                        if (tempdirection.x > 0)
+                            animator.SetTrigger("attack_right");
+                        else
+                            animator.SetTrigger("attack_left");
+                    }
+                    else
+                    {
+                        if (tempdirection.y > 0)
+                            animator.SetTrigger("attack_up");
+                        else
+                            animator.SetTrigger("attack_down");
+                    }
+                }
+
+
         }
     }
 
@@ -151,11 +183,13 @@ public class PlayerUse : NetworkBehaviour
                 #if UNITY_EDITOR
                 DebugDrawAttackBox(boxCenter, boxSize, angle);
                 #endif
+
                 foreach (Collider2D hitCollider in hitColliders)
                 {
                     if (hitCollider.GetComponent<Health>() != null)
                     {
-                        HitEnemyCMD(hitCollider.gameObject);
+                        if(isLocalPlayer)
+                            HitEnemyCMD(hitCollider.gameObject);
                     }
                 }
             }

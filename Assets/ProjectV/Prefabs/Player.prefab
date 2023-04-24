@@ -13,7 +13,6 @@ GameObject:
   - component: {fileID: 8245680476788521690}
   - component: {fileID: 8245680476788521693}
   - component: {fileID: 8245680476788521692}
-  - component: {fileID: 5447429480407928812}
   - component: {fileID: 4119243701210004039}
   - component: {fileID: 4849480261143776550}
   - component: {fileID: 8764052847087020056}
@@ -23,6 +22,8 @@ GameObject:
   - component: {fileID: 3989587451451937191}
   - component: {fileID: 8732299232969993995}
   - component: {fileID: 3148256992289488089}
+  - component: {fileID: 478089919}
+  - component: {fileID: 478089935}
   m_Layer: 6
   m_Name: Player
   m_TagString: Player
@@ -91,12 +92,12 @@ SpriteRenderer:
   m_SortingLayerID: 0
   m_SortingLayer: 0
   m_SortingOrder: 1
-  m_Sprite: {fileID: 7482667652216324306, guid: 311925a002f4447b3a28927169b83ea6, type: 3}
-  m_Color: {r: 0, g: 0, b: 0, a: 1}
+  m_Sprite: {fileID: -565664502, guid: 057be2b854db8dc4e8db812f68f9e6d4, type: 3}
+  m_Color: {r: 1, g: 1, b: 1, a: 1}
   m_FlipX: 0
   m_FlipY: 0
   m_DrawMode: 0
-  m_Size: {x: 1, y: 1}
+  m_Size: {x: 1, y: 2}
   m_AdaptiveModeThreshold: 0.5
   m_SpriteTileMode: 0
   m_WasSpriteAssigned: 1
@@ -163,24 +164,6 @@ Rigidbody2D:
   m_SleepingMode: 1
   m_CollisionDetection: 0
   m_Constraints: 4
---- !u!114 &5447429480407928812
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 3244946866032201212}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 2b4d38388e047634e9045911467043c4, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  syncDirection: 0
-  syncMode: 0
-  syncInterval: 0.1
-  color:
-    serializedVersion: 2
-    rgba: 4278190080
 --- !u!114 &4119243701210004039
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -197,6 +180,7 @@ MonoBehaviour:
   syncMode: 0
   syncInterval: 0.1
   rb: {fileID: 8245680476788521692}
+  animator: {fileID: 478089919}
   speed: 4
 --- !u!61 &4849480261143776550
 BoxCollider2D:
@@ -211,18 +195,18 @@ BoxCollider2D:
   m_IsTrigger: 0
   m_UsedByEffector: 0
   m_UsedByComposite: 0
-  m_Offset: {x: 0, y: 0}
+  m_Offset: {x: 0, y: -0.3}
   m_SpriteTilingProperty:
     border: {x: 0, y: 0, z: 0, w: 0}
     pivot: {x: 0.5, y: 0.5}
-    oldSize: {x: 1, y: 1}
-    newSize: {x: 1, y: 1}
+    oldSize: {x: 1, y: 2}
+    newSize: {x: 1, y: 2}
     adaptiveTilingThreshold: 0.5
     drawMode: 0
     adaptiveTiling: 0
   m_AutoTiling: 0
   serializedVersion: 2
-  m_Size: {x: 0.955, y: 0.955}
+  m_Size: {x: 0.85, y: 0.7}
   m_EdgeRadius: 0
 --- !u!114 &8764052847087020056
 MonoBehaviour:
@@ -303,6 +287,7 @@ MonoBehaviour:
   enemyLayer:
     serializedVersion: 2
     m_Bits: 64
+  animator: {fileID: 478089919}
   rb: {fileID: 8245680476788521692}
 --- !u!114 &3989587451451937191
 MonoBehaviour:
@@ -338,6 +323,7 @@ MonoBehaviour:
   playerContent: {fileID: -8757130696875760200}
   otherContent: {fileID: 0}
   interactionRange: 5
+  border: {fileID: 0}
 --- !u!114 &3148256992289488089
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -388,3 +374,40 @@ MonoBehaviour:
   fill: {fileID: 0}
   damageColor: {r: 1, g: 0, b: 0, a: 0.8509804}
   damageFlashDuration: 0.3
+--- !u!95 &478089919
+Animator:
+  serializedVersion: 4
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 3244946866032201212}
+  m_Enabled: 1
+  m_Avatar: {fileID: 0}
+  m_Controller: {fileID: 9100000, guid: 3e9e1da0dd926664c871ff6cb8cf0ef9, type: 2}
+  m_CullingMode: 0
+  m_UpdateMode: 0
+  m_ApplyRootMotion: 0
+  m_LinearVelocityBlending: 0
+  m_StabilizeFeet: 0
+  m_WarningMessage: 
+  m_HasTransformHierarchy: 1
+  m_AllowConstantClipSamplingOptimization: 1
+  m_KeepAnimatorControllerStateOnDisable: 0
+--- !u!114 &478089935
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 3244946866032201212}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 7f6f3bf89aa97405989c802ba270f815, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  syncDirection: 0
+  syncMode: 0
+  syncInterval: 0.1
+  clientAuthority: 1
+  animator: {fileID: 478089919}
