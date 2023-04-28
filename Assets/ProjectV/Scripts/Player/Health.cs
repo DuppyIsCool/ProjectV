@@ -103,8 +103,15 @@ public class Health : NetworkBehaviour
     {
         if ((currentHealth - amount) <= 0)
         {
-            print("Player object has died. Setting health back to full");
-            currentHealth = 100;  
+            if (!gameObject.CompareTag("Enemy"))
+            {
+                print("Player object has died. Setting health back to full");
+                currentHealth = 100;
+            }
+            else 
+            {
+                NetworkServer.Destroy(this.gameObject);
+            }
             //health = maxHealth;
         }
         else 

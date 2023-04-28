@@ -7,8 +7,8 @@ public class ServerProjectile : MonoBehaviour
     private int damage;
     private void OnCollisionEnter2D(Collision2D collision)
     {
-        //If we collided with a player
-        if (collision.collider.CompareTag("Player")) 
+        //If we collided with something that has a health
+        if (collision.collider.gameObject.GetComponent<Health>() != null) 
         {
             collision.collider.gameObject.GetComponent<Health>().ApplyDamage(damage);
         }
