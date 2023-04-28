@@ -7,7 +7,7 @@ public class Health : NetworkBehaviour
 {
     [SerializeField] private int maxHealth = 100;
     [SerializeField]
-    [SyncVar(hook = nameof(OnHealthChanged))] private int currentHealth;
+    [SyncVar(hook = nameof(OnHealthChanged))] public int currentHealth;
 
     [SerializeField] private Slider healthSlider;
     [SerializeField] private Gradient healthGradient;
@@ -25,12 +25,19 @@ public class Health : NetworkBehaviour
     public override void OnStartLocalPlayer()
     {
         base.OnStartLocalPlayer();
-        GameObject canvasSlider = GameObject.Find("Canvas").transform.Find("HealthBar").gameObject;
-        canvasSlider.SetActive(true);
-        healthSlider = canvasSlider.GetComponent<Slider>();
-        fill = canvasSlider.transform.GetChild(0).GetComponent<Image>();
-        UpdateHealthUI();
-        
+        try
+        {
+            GameObject canvasSlider = GameObject.Find("Canvas").transform.Find("HealthBar").gameObject;
+            canvasSlider.SetActive(true);
+            healthSlider = canvasSlider.GetComponent<Slider>();
+            fill = canvasSlider.transform.GetChild(0).GetComponent<Image>();
+
+            UpdateHealthUI();
+        }
+        catch (System.Exception e) 
+        {
+            Debug.Log("Encountered Exception initializing healthbar");
+        }
     }
 
     private void Start()
@@ -70,8 +77,15 @@ public class Health : NetworkBehaviour
 
     private void UpdateHealthUI()
     {
-        healthSlider.value = (float)currentHealth / maxHealth;
-        fill.color = healthGradient.Evaluate(healthSlider.normalizedValue);
+        try
+        {
+            healthSlider.value = (float)currentHealth / maxHealth;
+            fill.color = healthGradient.Evaluate(healthSlider.normalizedValue);
+        }
+        catch (System.Exception e) 
+        {
+        
+        }
     }
 
     private IEnumerator FlashDamage()
