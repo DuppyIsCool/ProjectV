@@ -17,6 +17,10 @@ public class Health : NetworkBehaviour
     private Color originalColor;
     [SerializeField] private Color damageColor = new Color(1, 0, 0, 0.3f);
     [SerializeField] private float damageFlashDuration = 0.3f;
+    [SerializeField]private AudioSource soundEffects;
+    [SerializeField]private AudioClip takeDamageSound;
+    private AudioClip takeDamageSound2;
+    private AudioClip deathSound;
 
     public override void OnStartLocalPlayer()
     {
@@ -41,6 +45,10 @@ public class Health : NetworkBehaviour
         Renderer renderer = GetComponent<Renderer>();
         originalMaterial = renderer.material;
         originalColor = originalMaterial.color;
+        AudioSource[] audioSources = GameObject.Find("Sound Effects").GetComponents<AudioSource>();
+        soundEffects = audioSources[0];
+        takeDamageSound = audioSources[0].clip;
+        deathSound = audioSources[4].clip;
     }
 
     [ClientRpc]
@@ -48,6 +56,7 @@ public class Health : NetworkBehaviour
     {
         if (currentHealth <= 0)
         {
+            soundEffects.PlayOneShot(deathSound);
             // Handle player death here (e.g., respawn, disable movement, etc.)
         }
 
@@ -57,7 +66,13 @@ public class Health : NetworkBehaviour
     private void OnHealthChanged(int oldHealth, int newHealth)
     {
         if(isLocalPlayer)
+        {
             UpdateHealthUI();
+            if(oldHealth > newHealth)
+            {
+                soundEffects.PlayOneShot(takeDamageSound);
+            }
+        }
     }
 
     private void UpdateHealthUI()

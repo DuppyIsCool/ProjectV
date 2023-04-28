@@ -10,6 +10,8 @@ public class InventoryUI : NetworkBehaviour
     public Inventory playerContent, otherContent;
     public float interactionRange = 5f; // Add a customizable interaction range
     public GameObject border;
+    private AudioSource soundEffects;
+    private AudioClip itemEquipSound;
     public void Update()
     {
         //Code for toggling the panel
@@ -37,6 +39,9 @@ public class InventoryUI : NetworkBehaviour
     }
     public override void OnStartLocalPlayer() 
     {
+        AudioSource[] audioSources = GameObject.Find("Sound Effects").GetComponents<AudioSource>();
+        soundEffects = audioSources[0];
+        itemEquipSound = audioSources[6].clip;
         if (isLocalPlayer)
         {
             try
@@ -234,6 +239,10 @@ public class InventoryUI : NetworkBehaviour
 
     public void EquipItem(int slot) 
     {
+        if(isClient)
+        {
+            soundEffects.PlayOneShot(itemEquipSound);
+        }
         playerContent.EquipItemCmd(slot);
     }
 

@@ -5,6 +5,8 @@ using Mirror;
 
 public class ItemPickup : NetworkBehaviour
 {
+    private AudioSource soundEffects;
+    private AudioClip itemPickupSound;
     [SerializeField]
     [Tooltip("This represents the type of item")]
     private Item item;
@@ -16,6 +18,9 @@ public class ItemPickup : NetworkBehaviour
     public void Start()
     {
         this.GetComponent<SpriteRenderer>().sprite = item.sprite;
+        AudioSource[] audioSources = GameObject.Find("Sound Effects").GetComponents<AudioSource>();
+        soundEffects = audioSources[0];
+        itemPickupSound = audioSources[5].clip;
     }
 
     // Update is called once per frame
@@ -23,6 +28,10 @@ public class ItemPickup : NetworkBehaviour
     {
         if (collider.tag.Equals("Player"))
         {
+            if(isClient)
+            {
+                soundEffects.PlayOneShot(itemPickupSound);
+            }
             //Get the player's inventory
             Inventory playerInventory = collider.gameObject.GetComponent<Inventory>();
 

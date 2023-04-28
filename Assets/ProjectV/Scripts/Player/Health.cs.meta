@@ -4,8 +4,9 @@ MonoImporter:
   externalObjects: {}
   serializedVersion: 2
   defaultReferences:
-  - HBPrefab: {fileID: 3242816683657420465, guid: 7c47d48b3f4d37844bd8701b78eda297, type: 3}
-  - callerRender: {instanceID: 0}
+  - healthSlider: {instanceID: 0}
+  - fill: {instanceID: 0}
+  - damageSound: {fileID: 8300000, guid: 1c0d00fdf4ac0694181e9451d1184585, type: 3}
   executionOrder: 0
   icon: {instanceID: 0}
   userData: 
