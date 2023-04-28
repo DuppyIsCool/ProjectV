@@ -31,7 +31,7 @@ public class Inventory : NetworkBehaviour
         if (index <= size && index >= 0)
         {
             equippedItem = content[index];
-            print("Player has equipped item: " + equippedItem.item.id);           
+            print("Player has equipped item: " + equippedItem.item.id);     
         }
     }
 

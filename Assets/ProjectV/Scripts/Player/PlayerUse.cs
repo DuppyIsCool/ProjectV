@@ -17,6 +17,9 @@ public class PlayerUse : NetworkBehaviour
     private Rigidbody2D rb;
 
     private Camera cam;
+    private AudioSource soundEffects;
+    private AudioClip bowShootSound;
+    private AudioClip swordSwingSound;
 
 
     Vector2 mousePosition;
@@ -24,6 +27,10 @@ public class PlayerUse : NetworkBehaviour
     private void Start()
     {
         cam = Camera.main;
+        AudioSource[] audioSources = GameObject.Find("Sound Effects").GetComponents<AudioSource>();
+        soundEffects = audioSources[0];
+        bowShootSound = audioSources[3].clip;
+        swordSwingSound = audioSources[2].clip;
     }
 
     private void Update()
@@ -85,6 +92,7 @@ public class PlayerUse : NetworkBehaviour
                         else
                             animator.SetTrigger("attack_down");
                     }
+                    soundEffects.PlayOneShot(swordSwingSound);
                 }
 
 
@@ -165,6 +173,7 @@ public class PlayerUse : NetworkBehaviour
                 SceneManager.MoveGameObjectToScene(projectile, this.gameObject.scene);
                 Physics2D.IgnoreCollision(GetComponent<Collider2D>(), projectile.GetComponent<Collider2D>()); 
                 projectile.GetComponent<ClientProjectile>().ApplyForce(direction, bowItem.speed);
+                soundEffects.PlayOneShot(bowShootSound);
             }
 
             else if (equippedItem.item.GetType() == typeof(SwordItem))
