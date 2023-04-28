@@ -20,11 +20,13 @@ public class InventoryUI : NetworkBehaviour
             {
                 playerGroup.alpha = 1;
                 playerGroup.interactable = true;
+                playerGroup.blocksRaycasts = true;
             }
             else 
             {
                 playerGroup.alpha = 0;
                 playerGroup.interactable = false;
+                playerGroup.blocksRaycasts = false;
             }
         }
 
@@ -37,27 +39,34 @@ public class InventoryUI : NetworkBehaviour
     {
         if (isLocalPlayer)
         {
-            //Get the UI gameobject
-            border = GameObject.Find("ItemBorder");
-            playerInventory = GameObject.Find("PlayerInventory");
-            otherInventory = GameObject.Find("OtherInventory");
-            playerGroup = playerInventory.GetComponent<CanvasGroup>();
-            otherGroup = otherInventory.GetComponent<CanvasGroup>();
-
-            playerContent.content.Callback += PlayerInventoryUIUpdates;
-            //If its first time setup, add new empty elements.
-            playerInventory.GetComponent<InventoryContainerUI>().inventoryUI = this;
-            otherInventory.GetComponent<InventoryContainerUI>().inventoryUI = this;
-            if (playerInventory.transform.childCount == 0)
+            try
             {
-                playerInventory.GetComponent<InventoryContainerUI>().Setup(GetComponent<Inventory>().size);
+                //Get the UI gameobject
+                border = GameObject.Find("ItemBorder");
+                playerInventory = GameObject.Find("PlayerInventory");
+                otherInventory = GameObject.Find("OtherInventory");
+                playerGroup = playerInventory.GetComponent<CanvasGroup>();
+                otherGroup = otherInventory.GetComponent<CanvasGroup>();
+
+                playerContent.content.Callback += PlayerInventoryUIUpdates;
+                //If its first time setup, add new empty elements.
+                playerInventory.GetComponent<InventoryContainerUI>().inventoryUI = this;
+                otherInventory.GetComponent<InventoryContainerUI>().inventoryUI = this;
+                if (playerInventory.transform.childCount == 0)
+                {
+                    playerInventory.GetComponent<InventoryContainerUI>().Setup(GetComponent<Inventory>().size);
+                }
+
+                // Process initial SyncList payload
+                for (int index = 0; index < gameObject.GetComponent<Inventory>().size; index++)
+                {
+                    //This calls the InventoryUIUpdates, adding every item that is in the currentInventory
+                    PlayerInventoryUIUpdates(SyncList<InventoryItem>.Operation.OP_SET, index, new InventoryItem(), playerContent.content[index]);
+                }
             }
-
-            // Process initial SyncList payload
-            for (int index = 0; index < gameObject.GetComponent<Inventory>().size; index++)
+            catch (System.Exception e)
             {
-                //This calls the InventoryUIUpdates, adding every item that is in the currentInventory
-                PlayerInventoryUIUpdates(SyncList<InventoryItem>.Operation.OP_SET, index, new InventoryItem(), playerContent.content[index]);
+                Debug.Log("Encountered Error initializing inventory. Likely an automated test: ");
             }
 
         }

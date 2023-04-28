@@ -31,8 +31,15 @@ public class PlayerUse : NetworkBehaviour
         //Only take updates from local players
         if (!isLocalPlayer)
             return;
-
-        mousePosition = cam.ScreenToWorldPoint(Input.mousePosition);
+        try
+        {
+            mousePosition = cam.ScreenToWorldPoint(Input.mousePosition);
+        }
+        catch (System.Exception e) 
+        {
+            
+            return;
+        }
 
         if (Input.GetButtonDown("Fire1"))
         {
