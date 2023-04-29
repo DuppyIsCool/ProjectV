@@ -17,4 +17,13 @@ EditorBuildSettings:
   - enabled: 1
     path: Assets/ProjectV/Scenes/Sublevel2.unity
     guid: 887beb03007849f4dbd61ebab0f4d6e6
+  - enabled: 1
+    path: Assets/ProjectV/Scenes/DungeonLevel1.unity
+    guid: dcf361e9609d98f4e926bbc4a65e12d2
+  - enabled: 1
+    path: Assets/ProjectV/Scenes/DungeonLevel2.unity
+    guid: e2696a86b11f58a408b4ed7dd1bf13f9
+  - enabled: 1
+    path: Assets/ProjectV/Scenes/EndDemo.unity
+    guid: d21ffbcaa3d8828459cf75e00873a49e
   m_configObjects: {}

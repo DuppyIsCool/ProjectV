@@ -10,7 +10,14 @@ public class CameraFollow : NetworkBehaviour
 
     void Awake()
     {
-        mainCam = GameObject.FindGameObjectWithTag("Camera").GetComponent<CinemachineVirtualCamera>();
+        try
+        {
+            mainCam = GameObject.FindGameObjectWithTag("Camera").GetComponent<CinemachineVirtualCamera>();
+        }
+        catch (System.Exception e) 
+        {
+            Debug.Log("Could not find camera");
+        }
     }
     public override void OnStartLocalPlayer()
     {

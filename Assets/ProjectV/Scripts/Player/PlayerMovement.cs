@@ -8,7 +8,7 @@ public class PlayerMovement : NetworkBehaviour
     private Rigidbody2D rb;
 
     private Vector2 movement; 
-
+    public Animator animator;
     [SerializeField]
     private float speed = 2;
     // Start is called before the first frame update
@@ -25,6 +25,10 @@ public class PlayerMovement : NetworkBehaviour
 
         movement.x = Input.GetAxisRaw("Horizontal");
         movement.y = Input.GetAxisRaw("Vertical");
+
+        animator.SetFloat("horizontal", movement.x);
+        animator.SetFloat("vertical", movement.y);
+        animator.SetFloat("speed", movement.sqrMagnitude);
     }
 
     private void FixedUpdate()

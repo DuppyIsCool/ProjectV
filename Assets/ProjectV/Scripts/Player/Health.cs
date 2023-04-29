@@ -1,71 +1,138 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.UI;
 using Mirror;
 public class Health : NetworkBehaviour
 {
-    [SyncVar(hook = nameof(OnHealthChange))]
-    public int health;
+    [SerializeField] private int maxHealth = 100;
+    [SerializeField]
+    [SyncVar(hook = nameof(OnHealthChanged))] public int currentHealth;
 
-    [SyncVar(hook = nameof(OnHealthChange))]
-    public int maxHealth;
+    [SerializeField] private Slider healthSlider;
+    [SerializeField] private Gradient healthGradient;
+    [SerializeField] private Image fill;
 
-    void Start()
+    private Material originalMaterial;
+    private Color originalColor;
+    [SerializeField] private Color damageColor = new Color(1, 0, 0, 0.3f);
+    [SerializeField] private float damageFlashDuration = 0.3f;
+    [SerializeField]private AudioSource soundEffects;
+    [SerializeField]private AudioClip takeDamageSound;
+    private AudioClip takeDamageSound2;
+    private AudioClip deathSound;
+
+    public override void OnStartLocalPlayer()
     {
-        if (isServer) 
+        base.OnStartLocalPlayer();
+        try
         {
-            health = maxHealth;
+            GameObject canvasSlider = GameObject.Find("Canvas").transform.Find("HealthBar").gameObject;
+            canvasSlider.SetActive(true);
+            healthSlider = canvasSlider.GetComponent<Slider>();
+            fill = canvasSlider.transform.GetChild(0).GetComponent<Image>();
+
+            UpdateHealthUI();
+        }
+        catch (System.Exception e) 
+        {
+            Debug.Log("Encountered Exception initializing healthbar");
         }
     }
 
-    void OnHealthChange(int oldHealth, int newHealth)
+    private void Start()
     {
-        if (isClientOnly)
-            print("Client: My health changed from " + oldHealth + " to " + newHealth);
+        Renderer renderer = GetComponent<Renderer>();
+        originalMaterial = renderer.material;
+        originalColor = originalMaterial.color;
+        AudioSource[] audioSources = GameObject.Find("Sound Effects").GetComponents<AudioSource>();
+        soundEffects = audioSources[0];
+        takeDamageSound = audioSources[0].clip;
+        deathSound = audioSources[4].clip;
+    }
 
-        if (isServer)
+    [ClientRpc]
+    public void RpcTakeDamage(int damage)
+    {
+        if (currentHealth <= 0)
         {
-            print("Server: Player object health changed from " + oldHealth + " to " + newHealth);
+            soundEffects.PlayOneShot(deathSound);
+            // Handle player death here (e.g., respawn, disable movement, etc.)
+        }
+
+        StartCoroutine(FlashDamage());
+    }
+
+    private void OnHealthChanged(int oldHealth, int newHealth)
+    {
+        if(isLocalPlayer)
+        {
+            UpdateHealthUI();
+            if(oldHealth > newHealth)
+            {
+                soundEffects.PlayOneShot(takeDamageSound);
+            }
         }
     }
 
-    void OnMaxHealthChange(int oldMaxHealth, int newMaxHealth) 
+    private void UpdateHealthUI()
     {
-        if (isClientOnly)
-            print("Client: My max health changed from " + oldMaxHealth + " to " + newMaxHealth);
-
-        if (isServer)
+        try
         {
-            print("Server: Player object max health changed from " + oldMaxHealth + " to " + newMaxHealth);
+            healthSlider.value = (float)currentHealth / maxHealth;
+            fill.color = healthGradient.Evaluate(healthSlider.normalizedValue);
         }
+        catch (System.Exception e) 
+        {
+        
+        }
+    }
+
+    private IEnumerator FlashDamage()
+    {
+        Renderer renderer = GetComponent<Renderer>();
+        renderer.material.color = damageColor;
+
+        yield return new WaitForSeconds(damageFlashDuration);
+
+        renderer.material.color = originalColor;
     }
 
     [Server]
     public void ApplyDamage(int amount)
     {
-        if ((health -= amount) <= 0)
+        if ((currentHealth - amount) <= 0)
         {
-            print("Player object has died. Setting health back to full");
-            health = maxHealth;
+            if (!gameObject.CompareTag("Enemy"))
+            {
+                print("Player object has died. Setting health back to full");
+                currentHealth = 100;
+            }
+            else 
+            {
+                NetworkServer.Destroy(this.gameObject);
+            }
+            //health = maxHealth;
         }
         else 
         {
-            health -= amount;
+            currentHealth -= amount;
             print("Player object took " + amount + " damage");
+            RpcTakeDamage(currentHealth);
         }
     }
 
     [Server]
     public void Heal(int amount) 
     {
-        if ((health += amount) >= maxHealth)
+        if ((currentHealth + amount) >= maxHealth)
         {
             print("Player object was healed to full died.");
-            health = maxHealth;
+            currentHealth = maxHealth;
         }
         else
         {
-            health += amount;
+            currentHealth += amount;
             print("Player object healed " + amount + " damage");
         }
     }

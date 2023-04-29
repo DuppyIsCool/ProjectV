@@ -5,98 +5,24 @@ using UnityEngine.UI;
 using System;
 public class Inventory : NetworkBehaviour
 {
-    public readonly SyncList<InventoryItem> inventory = new SyncList<InventoryItem>();
-    [SerializeField] [SyncVar] private int size;
-    [SerializeField] [SyncVar] public InventoryItem equippedItem = new InventoryItem().GetEmptyItem();
-    [SerializeField] private GameObject itemButtonPrefab;
+    public readonly SyncList<InventoryItem> content = new SyncList<InventoryItem>();
+    [SerializeField] [SyncVar] public int size;
+    [SyncVar] public InventoryItem equippedItem = new InventoryItem().GetEmptyItem();
 
-    private GameObject inventoryUI,g;
     [Server]
     private void SetupInventory() 
     {
-        //Initializing the Inventory would go here
-        print("Setup inventory here!");
+        for (int i = 0; i < size; i++)
+            content.Add(new InventoryItem().GetEmptyItem());
     }
 
-    public override void OnStartClient() 
+    public override void OnStartServer()
     {
-        //Get the UI gameobject
-        inventoryUI = GameObject.Find("InventoryUI");
-        inventory.Callback += InventoryUIUpdates;    
-        
-        // Process initial SyncList payload
-        for (int index = 0; index < inventory.Count; index++)
-        {
-            InventoryUIUpdates(SyncList<InventoryItem>.Operation.OP_ADD, index, new InventoryItem(), inventory[index]);
-        }
-
-    }
-
-    public override void OnStopClient()
-    {
-        //Test code: may need to be changed if fix is found for synclist clearing on scene transfer
-        //When stopping the client, clear the UI as the inventory is cleared
-        for (int i = 0; i < inventoryUI.transform.childCount; i++)
-        {
-            Destroy(inventoryUI.transform.GetChild(i).gameObject);
-        }
-
-        //Unsubscribe from callback
-        inventory.Callback -= InventoryUIUpdates;
-        base.OnStopClient();
-    }
-
-    private void Start()
-    {
-        if (isServer) 
+        if (isServer && content.Count == 0) 
         {
             SetupInventory();
         }
-    }
-
-    void InventoryUIUpdates(SyncList<InventoryItem>.Operation op, int index, InventoryItem oldItem, InventoryItem newItem) 
-    {
-        //Test code printing for inventory status
-        if(isLocalPlayer)
-
-            switch (op) 
-            {
-                case SyncList<InventoryItem>.Operation.OP_ADD:
-                    //Create the Item UI in the Inventory
-                    g = Instantiate(itemButtonPrefab,inventoryUI.transform);
-                    g.transform.GetChild(0).GetComponent<TMP_Text>().text = newItem.item.displayName;
-                    g.transform.GetChild(1).GetComponent<TMP_Text>().text = newItem.item.description;
-                    g.transform.GetChild(2).GetComponent<Image>().sprite = newItem.item.sprite;
-                    g.GetComponent<Button>().AddEventListener(index, EquipItemCmd);
-                    break;
-
-                case SyncList<InventoryItem>.Operation.OP_INSERT:
-
-                    break;
-
-                case SyncList<InventoryItem>.Operation.OP_SET:
-                    //Edit the Item UI in the Inventory
-                    g = inventoryUI.transform.GetChild(index).gameObject;
-                    g.transform.GetChild(0).GetComponent<TMP_Text>().text = newItem.item.displayName;
-                    g.transform.GetChild(1).GetComponent<TMP_Text>().text = newItem.item.description;
-                    g.transform.GetChild(2).GetComponent<Image>().sprite = newItem.item.sprite;
-                    break;
-
-                case SyncList<InventoryItem>.Operation.OP_REMOVEAT:
-                    //Index in the inventory syncs with the UI index, so delete the UI index
-                    Destroy(inventoryUI.transform.GetChild(index).gameObject);
-                    break;
-
-                case SyncList<InventoryItem>.Operation.OP_CLEAR:
-                    //Clear all ItemUI elements
-                    for (int i = 0; i < inventoryUI.transform.childCount; i++) 
-                    {
-                        Destroy(inventoryUI.transform.GetChild(i).gameObject);
-                    }
-                    break;
-
-
-            }
+        base.OnStartServer();
     }
 
     [Command]
@@ -104,8 +30,8 @@ public class Inventory : NetworkBehaviour
     {
         if (index <= size && index >= 0)
         {
-            equippedItem = inventory[index];
-            print("Player has equipped item: " + equippedItem.item.id);           
+            equippedItem = content[index];
+            print("Player has equipped item: " + equippedItem.item.id);     
         }
     }
 
@@ -113,43 +39,61 @@ public class Inventory : NetworkBehaviour
     public bool AddItem(Item item, int amount) 
     {
 
-        //Loop to see if we can fit the item into a current stack
-        for(int i = 0; i < inventory.Count; i++)
+        //Loop to see if we can fit the item into a current stack or an empty slot
+        for(int i = 0; i < content.Count; i++)
         {
-            //Check if the ids are the same and if the amount that would be added does not exceed the stack limit.
-            if (inventory[i].item.id == item.id && inventory[i].amount + amount <= inventory[i].item.stacklimit) 
+            if (content[i].item != null)
             {
-                inventory[i] = inventory[i].ChangeQuantity(inventory[i].amount + amount);
+                //Check if the ids are the same and if the amount that would be added does not exceed the stack limit.
+                if (content[i].item.id == item.id && content[i].amount + amount <= content[i].item.stacklimit)
+                {
+                    content[i] = content[i].ChangeQuantity(content[i].amount + amount);
+                    return true;
+                }
+            }
+
+        }
+
+        //Loop to see if we can fit it into an empty slot
+        for (int i = 0; i < content.Count; i++)
+        {
+            //Empty slot
+            if (content[i].item == null)
+            {
+                content[i] = content[i].ChangeItem(item, amount);
                 return true;
             }
         }
 
-        //If not, see if we can fit into its own stack in the inventory
-        if (inventory.Count + 1 <= size) 
-        {
-            InventoryItem newItem = new InventoryItem { item = item, amount = amount };
-            inventory.Add(newItem);
-            return true;
-        }
         return false;
     }
 
     public bool CanAddItem(Item item, int amount) 
     {
-        foreach (InventoryItem invitem in inventory)
+        foreach (InventoryItem invitem in content)
         {
-            if (invitem.amount + amount <= invitem.item.stacklimit && invitem.item.id == item.id)
+            if (invitem.item == null)
+            {
+                return true;
+            }
+            else if (invitem.amount + amount <= invitem.item.stacklimit && invitem.item.id == item.id)
             {
                 return true;
             }
         }
 
-        if (inventory.Count + 1 <= size)
-        {
-            return true;
-        }
-
         return false;
+    }
+
+    public InventoryItem GetItemAtSlot(int slot) 
+    {
+        if (slot >= 0 && slot < content.Count)
+            return content[slot];
+        else
+        {
+            Debug.LogError("Error grabbing item and out-of-bounds slot");
+            return new InventoryItem().GetEmptyItem();
+        }
     }
 
     public void Awake()
@@ -173,7 +117,14 @@ public struct InventoryItem
             amount = newAmount
         };
     }
-
+    public InventoryItem ChangeItem(Item newItem, int newAmount) 
+    {
+        return new InventoryItem
+        {
+            item = newItem,
+            amount = newAmount
+        };
+    }
     public InventoryItem GetEmptyItem()
         => new InventoryItem
         {
